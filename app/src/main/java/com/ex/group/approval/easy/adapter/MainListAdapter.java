@@ -65,7 +65,7 @@ public class MainListAdapter extends ArrayAdapter<MainListItem> {
 		view1.setTextColor(Color.rgb(62, 62, 62));
 		
 		if(view3 != null && item.newItemCount >= 0) {
-			view3.setText(String.valueOf(item.newItemCount + 7));
+			view3.setText(String.valueOf(item.newItemCount));
 			view3.setVisibility(View.VISIBLE);
 			mainLayoutCount.setVisibility(View.VISIBLE);
 		} else {
