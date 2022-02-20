@@ -1,0 +1,193 @@
+<?xml version="1.0"?>
+
+    <resources>
+
+    <!--모바일 오피스 3.0 Strings-->
+
+
+    <string name="action_setting87">Settings</string>
+
+    <!--IntroActivity-->
+
+
+    <string name="intro_launching_error">모바일오피스 실행 에러</string>
+
+    <string name="intro_notInstalled_SSM">모바일관리(SSM)앱이 설치되지 않았습니다. 모바일관리(SSM)앱 설치-인증 후에 진행하여 주십시오.</string>
+
+    <string name="intro_notInstalled_SSM_INSTALLER">모바일오피스 필수앱을 설치 또는 업데이트 합니다.</string>
+
+    <string name="intro_notInstalled_STORE">스토어앱 설치를 위한 페이지로 이동합니다.</string>
+
+    <!--로그인액티비티 -->
+
+
+    <string name="login_dialgo">로그인 알림</string>
+
+    <string name="login_failure">로그인 실패</string>
+
+    <string name="networkError">네트워크 에러</string>
+
+    <string name="login_first_lauch_noti">최초 1회 ID와 하이포탈 결재 비밀번호로 로그인을 해야합니다.</string>
+
+    <!--ID -->
+
+
+    <string name="login_id_remeberID">ID 기억하기</string>
+
+    <!--PIN번호-->
+
+
+    <string name="pin_regi_title">PIN번호 등록</string>
+
+    <string name="pin_regi_content">PIN번호 등록이 되지 않았습니다.\nPIN등록을 진행하시겠습니까?</string>
+
+    <string name="pin_help">PIN번호 4자리를 입력하세요.</string>
+
+    <string name="pin_error">PIN번호가 일치하지 않습니다.\n다시입력해주시기 바랍니다.</string>
+
+    <string name="pin_regi_request1">PIN번호를 입력해주시기 바랍니다.</string>
+
+    <string name="pin_regi_request2">PIN번호를 재입력해주시기 바랍니다.</string>
+
+    <string name="pin_regi_sucess">PIN번호 등록이 완료되었습니다.</string>
+
+    <string name="pin_regi_noti">PIN번호를 등록 하시기 바랍니다.</string>
+
+    <string name="pin_auth_success">PIN 인증 성공</string>
+
+    <!--지문등록 요청 -->
+
+
+    <string name="fp_regi_title">지문 등록</string>
+
+    <string name="login_fingerprint_register_first">먼저 지문 등록을 하시기 바랍니다.</string>
+
+    <string name="fp_regi_content">지문이 등록 되지 않았습니다.\지문 등록을 하시기 바랍니다.</string>
+
+    <string name="menu_easy_login_setting_title">간편 로그인 설정</string>
+
+    <!--업데이트 요청-->
+
+
+    <string name="request_launcher_update_title">업데이트 알림</string>
+
+    <string name="request_launcher_update_context">업데이트 버전이 존재합니다.\n스토어로 이동합니다.</string>
+
+    <!--알림 수신 설정-->
+
+
+    <string name="menu_alarm_setting_title">알림 수신 설정</string>
+
+    <string name="menu_alram_setting_menu">식단</string>
+
+    <string name="menu_alarm_setting_holiday">경조사 알림</string>
+
+    <string name="menu_alarm_setting_businessMsg">경영메세지 알림</string>
+
+    <string name="menu_alarm_setting_receivetime">방해금지 시간대 설정</string>
+
+    <string name="menu_alarm_setting_receivetime_content">해당 시간에 모바일오피스 알림을 받지 않습니다.</string>
+
+    <string name="menu_alarm_setting_start">시작</string>
+
+    <string name="menu_alarm_setting_end">종료</string>
+
+    <string name="elec_alarm_setting_holiday">전자결재 알림</string>
+
+    <string name="memo_alarm_setting_holiday">메모보고 알림</string>
+
+
+    <!--지문지원 불가능-->
+
+
+    <!--지문등록 요청 -->
+
+
+    <string name="Exit">모바일오피스 종료</string>
+
+    <!--navigation drawer -->
+
+
+    <string name="logout">로그아웃</string>
+
+    <string name="confirm_logout">로그아웃 되었습니다.</string>
+
+    <string name="dialog_logout">로그아웃 하시겠습니까?</string>
+
+    <!--vpn 접속 문구-->
+
+
+    <string name="connectingFail_title">업무망 연결실패</string>
+
+    <string name="connectingFail_text">업무망 연결에 실패했습니다.</string>
+
+    <string name="networkTransition_title">네트워크 전환</string>
+
+    <string name="networkTransition_text">업무망 접속 시 3G/LTE로 전환 해야합니다.</string>
+
+    <string name="connectionFailed">접속 실패</string>
+
+    <string name="authenticationFailed">인증 실패</string>
+
+    <string name="connectingFailed">업무망 연결 실패</string>
+
+    <string name="vpn_wait_message">업무망 연결중입니다. \n잠시만 기다려주세요.</string>
+
+    <string name="connectionTimeExcess">접속 대기 시간을 초과하였습니다. \n잠시후 다시 시도해주세요.</string>
+
+    <string name="vpn_unusual_finish">업무망 접속이 종료되었습니다. \n다시 시도해 주세요</string>
+
+    <!--식단-->
+
+
+    <string name="menu_date">일자</string>
+
+    <string name="menu_time">시간</string>
+
+    <string name="menu_classification">구분</string>
+
+    <string name="menu_inquiry">식단표 조회</string>
+
+    <string name="menu_alarm_set">식단알림 설정</string>
+
+    <string name="menu_Select_group">기관을 설정해주세요</string>
+
+    <string name="menu_Group">기관</string>
+
+    <string name="menu_menu1">메뉴 1</string>
+
+    <string name="menu_menu2">메뉴 2</string>
+
+    <string name="menu_josik1">조식1</string>
+
+    <string name="menu_josik">조식</string>
+
+    <string name="menu_josik2">조식2</string>
+
+    <string name="menu_jungsik">중식</string>
+
+    <string name="menu_jungsik1">중식1</string>
+
+    <string name="menu_jungsik2">중식2</string>
+
+    <string name="menu_seoksik">석식</string>
+
+    <string name="menu_seoksik2">석식2</string>
+
+    <string name="menu_menu_notice">식당 미운영시 식단표가\n조회되지 않습니다.</string>
+
+    <string name="menu_alarmsavequestion">식단 알림을 설정 하시겠습니까?</string>
+
+    <string name="menu_alarmsavetoast_reg">식단 알림 설정이 완료되었습니다.</string>
+
+    <string name="menu_alarmsavetoast_unreg">식단 알림 설정이 해제되었습니다.</string>
+
+    <string name="menu_alarmreceivedmsg">식단 알림이 도착하였습니다.</string>
+
+    <string name="menu_alarmhref">식단표확인</string>
+
+    <string name="menu_alamrunreg">알림해지</string>
+
+    <string name="menu_finishApp">뒤로 버튼을 한번 더 누르면 종료됩니다.</string>
+
+</resources>

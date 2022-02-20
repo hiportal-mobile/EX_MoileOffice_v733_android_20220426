@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#ffffff"
+    android:paddingLeft="16dp"
+    android:paddingTop="13dp"
+    android:paddingBottom="13dp"
+    android:gravity="center_vertical" >
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center|left"
+        >
+
+        <ImageView
+            android:id="@+id/noti_image"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:src="@drawable/app_icon_launcher"/>
+
+        <TextView android:id="@+id/appName"
+            android:layout_width="0px"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="10dp"
+            android:gravity="center_vertical"
+            android:textColor="#555555"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="모바일 오피스 - 업무망 연결됨"
+            />
+        <TextView
+            android:id="@+id/vpn_disconnet_button"
+            android:layout_marginRight="3dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
+            android:textSize="12dp"
+            android:layout_width="70dp"
+            android:layout_height="match_parent"
+            android:text="로그아웃"
+            android:layout_marginLeft="10dp"
+            android:gravity="center|bottom"
+            android:textColor="#000000"/>
+
+
+    </LinearLayout>
+
+</LinearLayout>

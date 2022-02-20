@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:weightSum="640">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="46"
+            android:background="@color/main_title_bg"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:layout_weight="25"
+                android:gravity="center"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/text_calandar"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_weight="45"
+                android:text="교통/영업 현황"
+                android:textSize="17sp"
+                android:textColor="#fff"
+                android:gravity="center" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="13" />
+
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="match_parent"
+                android:layout_margin="7dp"
+                android:layout_weight="5" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="594"
+            android:weightSum="100"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="6"
+                android:orientation="horizontal"
+                android:visibility="visible">
+
+
+
+                <TextView
+                    android:id="@+id/text_date"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="90"
+                    android:background="#f3f3f3"
+                    android:gravity="right|center"
+                    android:text="2018년 12월 7일"
+                    android:paddingRight="20dp"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="38.5"
+                android:weightSum="100"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="5"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="90"
+                    android:weightSum="90"
+                    android:gravity="top"
+                    android:orientation="vertical">
+
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="20"
+                        android:weightSum="100"
+                        android:orientation="horizontal">
+
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:textSize="18sp"
+                            android:text="영업현황"
+                            android:gravity="center|bottom|left"
+                            android:textStyle="bold"
+                            android:textColor="@color/main_title_bg"
+                            android:layout_weight="40"/>
+
+
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="7"/>
+
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="21.2"
+                        android:weightSum="100"
+                        android:background="@color/login_pin_pad_bg"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="10"
+                            android:gravity="center"/>
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="27"
+                            android:text="전일 통행료(억원)"
+                            android:textColor="#ffffff"
+                            android:gravity="center"/>
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="27"
+                            android:text="전일 교통량(만대)"
+                            android:textColor="#ffffff"
+                            android:gravity="center"/>
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="36"
+                            android:text="하이패스\n이용률(%)"
+                            android:textColor="#ffffff"
+                            android:gravity="center"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.3"
+                        android:weightSum="100"
+                        android:background="#999999"
+                        android:orientation="horizontal">
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="21.2"
+                        android:weightSum="100"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="10"
+                            android:text="누계"
+                            android:textColor="#0068b0"
+                            android:gravity="center"
+                            android:background="#f3f3f3"/>
+                        <TextView
+                            android:id="@+id/text_total_toll"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:text="-"
+                            android:gravity="center"
+                            android:layout_weight="27"
+                            android:background="#f3f3f3"/>
+
+                        <TextView
+                            android:id="@+id/text_total_traffic"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:text="-"
+                            android:gravity="center"
+                            android:layout_weight="27"
+                            android:background="#f3f3f3" />
+
+                        <TextView
+                            android:id="@+id/text_hipass_share"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:text="-"
+                            android:gravity="center"
+                            android:layout_weight="36"
+                            android:background="#f3f3f3"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.3"
+                        android:weightSum="100"
+                        android:background="#999999"
+                        android:orientation="horizontal">
+                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:paddingTop="3dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="15"
+                        android:textSize="10sp"
+                        android:textColor="#000000"
+                        android:gravity="left|top"
+                        android:text="통행료 수입(억원)"/>
+
+
+                </LinearLayout>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="5"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="38.5"
+                android:weightSum="100"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="5"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="90"
+                    android:weightSum="90"
+                    android:gravity="top"
+                    android:orientation="vertical">
+
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="20"
+                        android:weightSum="100"
+                        android:orientation="horizontal">
+
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:textSize="18sp"
+                            android:text="교통사고 현황"
+                            android:textStyle="bold"
+                            android:gravity="center|bottom|left"
+                            android:textColor="@color/main_title_bg"
+                            android:layout_weight="40"/>
+
+
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="7"/>
+
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="21.2"
+                        android:weightSum="100"
+                        android:background="@color/login_pin_pad_bg"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="10"
+                            android:gravity="center"/>
+                        <TextView
+                            android:id="@+id/sago_yesterday_year"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:text="전일 교통사고 사망"
+                            android:textColor="#ffffff"
+                            android:gravity="center"
+                            android:layout_weight="30"/>
+
+                        <TextView
+                            android:id="@+id/sago_before_year"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="20"
+                            android:textColor="#ffffff"
+                            android:gravity="center"
+                            android:text="금년\n누적현황" />
+
+                        <TextView
+                            android:id="@+id/sago_now_year"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:text="전년\n누적현황"
+                            android:textColor="#ffffff"
+                            android:gravity="center"
+                            android:layout_weight="20"/>
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="20"
+                            android:text="증감율"
+                            android:textColor="#ffffff"
+                            android:gravity="center"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.3"
+                        android:weightSum="100"
+                        android:background="#999999"
+                        android:orientation="horizontal">
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="21.2"
+                        android:weightSum="100"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="10"
+                            android:text="누계"
+                            android:textColor="#0068b0"
+                            android:gravity="center"
+                            android:background="#f3f3f3"/>
+                        <TextView
+                            android:id="@+id/text_death_toll"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:text="-"
+                            android:gravity="center"
+                            android:layout_weight="30"
+                            android:background="#f3f3f3"/>
+                        <TextView
+                            android:id="@+id/text_total_death_toll"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:text="-"
+                            android:gravity="center"
+                            android:layout_weight="20"
+                            android:background="#f3f3f3"/>
+                        <TextView
+                            android:id="@+id/text_total_death_toll_lastyear"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:text="-"
+                            android:gravity="center"
+                            android:layout_weight="20"
+                            android:background="#f3f3f3"/>
+                        <TextView
+                            android:id="@+id/text_death_toll_variation"
+                            android:layout_width="0dp"
+                            android:gravity="center"
+                            android:layout_height="match_parent"
+                            android:layout_weight="20"
+                            android:background="#f3f3f3"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.3"
+                        android:weightSum="100"
+                        android:background="#999999"
+                        android:orientation="horizontal">
+                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/textView1"
+                        android:paddingTop="3dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="15"
+                        android:gravity="left|top"
+                        android:text="사망자 수(명)"
+                        android:textColor="#000000"
+                        android:textSize="10sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="5"/>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="4"/>
+
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="3"/>
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="640"
+        android:gravity="center|top"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_weight="480" />
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="160"
+            android:gravity="center|right"
+            android:paddingRight="20dp">
+
+
+            <ImageView
+                android:id="@+id/fab_back"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginRight="30dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:background="@drawable/floating_close"
+                android:clickable="true"
+
+                android:elevation="3dp" />
+
+            <ImageView
+                android:id="@+id/fab_bdack"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:clickable="false"
+                android:elevation="3dp"
+                android:scaleType="fitCenter"
+                android:padding="15dp"
+                android:layout_marginRight="30dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:src="@drawable/floating_prev" />
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+
+</android.support.constraint.ConstraintLayout>

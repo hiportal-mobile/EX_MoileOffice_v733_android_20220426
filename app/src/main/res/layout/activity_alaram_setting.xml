@@ -1,0 +1,597 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:weightSum="640"
+    tools:context="com.ex.group.folder.EasyLoginActivity">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="46"
+        android:background="@color/main_title_bg">
+        <LinearLayout
+            android:background="#042244"
+            android:id="@+id/main_mobileoffice_title"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="360"
+            android:gravity="center">
+
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="6"/>
+            <ImageView
+                android:id="@+id/button_prev"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="30"
+                android:scaleType="fitCenter"
+                android:src="@drawable/menu_prev"/>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="66"></LinearLayout>
+
+
+            <TextView
+                android:gravity="center"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="136"
+                android:textSize="17dp"
+                android:textStyle="bold"
+                android:scaleType="fitCenter"
+                android:textColor="@color/white"
+                android:text="@string/menu_alarm_setting_title"/>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="6"/>
+            <android.support.v4.widget.Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="106"/>
+
+
+        </LinearLayout>
+    </LinearLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="594"
+        android:background="@color/white">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:orientation="vertical">
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="#eeeeee"
+
+                android:layout_marginBottom="15dp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="알림 수신설정"
+                    android:textColor="@color/gray"
+                    android:textStyle="bold"
+                    android:textSize="10sp"/>
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#f9f9f9"/>
+            <LinearLayout
+                android:id="@+id/menu_alarm_setting_Menu"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:paddingLeft="5dp"
+                android:layout_height="55dp"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:orientation="horizontal"
+                android:weightSum="2">
+                <LinearLayout
+                    android:gravity="center"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:gravity="center|left"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/login_id_edit_text"
+                        android:paddingRight="20dp"
+                        android:paddingLeft="20dp"
+                        android:text="@string/menu_alram_setting_menu"
+                        android:textSize="17dp"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center|right"
+                    android:padding="5dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:id="@+id/select_menu_group"
+                        android:gravity="center"
+                        android:layout_width="150dp"
+                        android:layout_height="35dp"
+                        android:background="@drawable/menu_group"
+                        android:textColor="@color/login_id_edit_text"
+                        android:text="미설정"
+                        android:textSize="14dp"/>
+                </LinearLayout>
+
+
+
+
+
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#f9f9f9"/>
+            <LinearLayout
+
+                android:id="@+id/menu_alarm_setting_businessMsg"
+                android:gravity="center|left"
+                android:layout_width="match_parent"
+                android:paddingLeft="6dp"
+                android:weightSum="2"
+                android:layout_height="55dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="6dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:paddingLeft="20dp"
+                    android:gravity="center|left"
+                    android:textColor="@color/login_id_edit_text"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_alarm_setting_businessMsg"
+                    android:textSize="17dp"
+                    />
+                <Switch
+                    android:theme="@style/switchNOTI"
+                    android:id="@+id/switch_businessMsg"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/green"
+                    android:paddingRight="20dp"
+                    android:paddingLeft="50dp" />
+
+
+
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#f9f9f9"/>
+            <LinearLayout
+                android:id="@+id/menu_alarm_setting_topic"
+                android:gravity="center|left"
+                android:layout_width="match_parent"
+                android:paddingLeft="5dp"
+                android:layout_height="55dp"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:paddingLeft="20dp"
+                    android:textColor="@color/login_id_edit_text"
+                    android:gravity="center|left"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_alarm_setting_holiday"
+                    android:textSize="17dp"
+                    />
+                <Switch
+                    android:theme="@style/switchNOTI"
+                    android:id="@+id/switch_holiday"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/login_id_edit_text"
+                    android:paddingRight="20dp"
+                    android:paddingLeft="50dp" />
+            </LinearLayout>
+
+            <!--전자결재 알림-->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#f9f9f9"/>
+            <LinearLayout
+                android:id="@+id/elec_alarm_setting_topic"
+                android:gravity="center|left"
+                android:layout_width="match_parent"
+                android:paddingLeft="5dp"
+                android:layout_height="55dp"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:paddingLeft="20dp"
+                    android:textColor="@color/login_id_edit_text"
+                    android:gravity="center|left"
+                    android:layout_height="wrap_content"
+                    android:text="@string/elec_alarm_setting_holiday"
+                    android:textSize="17dp"
+                    />
+                <Switch
+                    android:theme="@style/switchNOTI"
+                    android:id="@+id/switch_elec"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/login_id_edit_text"
+                    android:paddingRight="20dp"
+                    android:paddingLeft="50dp" />
+            </LinearLayout>
+
+
+            <!--메모보고 알림-->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#f9f9f9"/>
+            <LinearLayout
+                android:id="@+id/memo_alarm_setting_topic"
+                android:gravity="center|left"
+                android:layout_width="match_parent"
+                android:paddingLeft="5dp"
+                android:layout_height="55dp"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:paddingLeft="20dp"
+                    android:textColor="@color/login_id_edit_text"
+                    android:gravity="center|left"
+                    android:layout_height="wrap_content"
+                    android:text="@string/memo_alarm_setting_holiday"
+                    android:textSize="17dp"
+                    />
+                <Switch
+                    android:theme="@style/switchNOTI"
+                    android:id="@+id/switch_memo"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/login_id_edit_text"
+                    android:paddingRight="20dp"
+                    android:paddingLeft="50dp" />
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:orientation="vertical">
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="3dp"
+                    android:background="#eeeeee"
+
+                    android:layout_marginBottom="15dp"/>
+                <TextView
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/gray"
+                    android:textStyle="bold"
+                    android:text="@string/menu_alarm_setting_receivetime"
+                    android:textSize="10sp"/>
+                <TextView
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#c0c0c0"
+                    android:text="@string/menu_alarm_setting_receivetime_content"
+                    android:textSize="10sp"/>
+
+
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#f9f9f9"/>
+            <LinearLayout
+                android:id="@+id/menu_alarm_setting_Interrupt_time"
+                android:gravity="center|left"
+                android:layout_width="match_parent"
+                android:paddingLeft="5dp"
+                android:layout_height="55dp"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/ban_title"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:paddingLeft="20dp"
+                    android:textColor="@color/login_id_edit_text"
+                    android:gravity="center|left"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_alarm_setting_receivetime"
+                    android:textSize="17dp"
+                    />
+                <Switch
+                    android:theme="@style/switchNOTI"
+                    android:id="@+id/switch_ban"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/login_id_edit_text"
+                    android:paddingRight="20dp"
+                    android:paddingLeft="50dp" />
+
+
+
+
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#f9f9f9"/>
+            <LinearLayout
+                android:id="@+id/time_Picker"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:paddingLeft="5dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:orientation="horizontal"
+                android:weightSum="2">
+                <LinearLayout
+                    android:id="@+id/setStartTime"
+                    android:gravity="center"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="85dp"
+                    android:weightSum="8.5"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/text_start"
+                        android:gravity="bottom|left"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="3.5"
+                        android:textColor="@color/black"
+                        android:textSize="17dp"
+                        android:text="@string/menu_alarm_setting_start"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="3.5"
+                        android:orientation="horizontal"
+                        android:weightSum="10">
+                        <TextView
+                            android:id="@+id/textStartTime"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="8"
+                            android:textSize="17dp"
+                            android:textColor="@color/black"
+                            android:text="PM 11:45"
+                            android:gravity="center|left"/>
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1.5"
+                            android:src="@drawable/setting_down_arraow"
+                            android:scaleType="fitCenter"/>
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/setEndTime"
+                    android:gravity="center"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="85dp"
+                    android:weightSum="8.5"
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="3.5"
+                        android:orientation="horizontal"
+                        android:weightSum="10">
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5"/>
+                        <TextView
+                            android:id="@+id/text_end"
+                            android:gravity="bottom|left"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="9.5"
+                            android:textSize="17dp"
+                            android:textColor="@color/black"
+                            android:text="@string/menu_alarm_setting_end"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="3.5"
+                        android:orientation="horizontal"
+                        android:weightSum="10">
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5"/>
+                        <TextView
+                            android:id="@+id/textEndTime"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="8"
+                            android:textSize="17dp"
+                            android:textColor="@color/black"
+                            android:text="PM 11:45"
+                            android:gravity="center|left"/>
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1.5"
+                            android:src="@drawable/setting_down_arraow"
+                            android:scaleType="fitCenter"/>
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="#eeeeee"
+
+                android:layout_marginBottom="15dp"/>
+            <LinearLayout
+                android:visibility="invisible"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="알림 방식 설정"
+                    android:textColor="@color/gray"
+                    android:textStyle="bold"
+                    android:textSize="10sp"/>
+
+
+            </LinearLayout>
+            <View
+                android:visibility="invisible"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#f9f9f9"/>
+            <LinearLayout
+                android:visibility="invisible"
+                android:id="@+id/menu_alarm_setting_way"
+                android:gravity="center|left"
+                android:layout_width="match_parent"
+
+                android:layout_height="55dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:weightSum="3"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:orientation="horizontal">
+                    <RadioButton
+                        android:id="@+id/pattern_vibration"
+                        android:theme="@style/switchNOTI"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent" />
+                    <TextView
+                       android:id="@+id/text_vibration"
+                        android:textColor="@color/login_id_edit_text"
+                        android:textSize="17dp"
+                        android:gravity="center|left"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="진동"/>
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"/>
+
+                    <RadioButton
+                        android:id="@+id/pattern_ring"
+                        android:theme="@style/switchNOTI"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent" />
+                    <TextView
+                        android:id="@+id/text_ring"
+                        android:textColor="@color/login_id_edit_text"
+                        android:textSize="17dp"
+                        android:gravity="center|left"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="소리"/>
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"/>
+                    <RadioButton
+                        android:id="@+id/pattern_both"
+                        android:theme="@style/switchNOTI"
+                        android:layout_width="wrap_content"
+                        android:gravity="center|right"
+                        android:layout_height="match_parent" />
+                    <TextView
+                        android:id="@+id/text_both"
+                        android:textColor="@color/login_id_edit_text"
+                        android:textSize="17dp"
+                        android:gravity="center|left"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="진동 + 소리"/>
+                </LinearLayout>
+
+
+            </LinearLayout>
+            <View
+                android:visibility="invisible"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#f9f9f9"/>
+        </LinearLayout>
+    </ScrollView>
+
+
+</LinearLayout>

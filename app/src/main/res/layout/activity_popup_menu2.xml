@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="fill_parent"
+    android:layout_gravity="top|right"
+    android:gravity="top|right"
+    android:orientation="horizontal"
+    android:weightSum="100">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="70"
+        android:background="#d8dbe9"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical"
+            android:weightSum="100">
+
+            <!-- 상단 -->
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="9"
+                android:weightSum="100">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="5" ></LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="60"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="20dp"
+                    android:paddingBottom="15dp" >
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:text="행정업무" ></TextView>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="15"
+                    android:gravity="center" >
+                    <!--<TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:text="홈 " ></TextView>-->
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/icon_home" >
+                    </ImageView>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="15"
+                    android:gravity="center" >
+                    <!--<TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:text="닫기 "></TextView>-->
+                    <!--<ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/icon_close">
+                    </ImageView>-->
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="5" >
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#333333">
+            </View>
+
+            <!-- 그리드뷰 -->
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="90"
+                android:layout_margin="10dp">
+                <GridView
+                    android:id="@+id/menu_grid"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:numColumns="3" />
+
+
+            </LinearLayout>
+
+
+            <!-- 메뉴 상단 -->
+            <!--<LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:layout_marginTop="15dp"
+                android:weightSum="100"
+                android:orientation="horizontal"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp" >
+
+                &lt;!&ndash; 메뉴 닫기 &ndash;&gt;
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="70">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="행정업무"></TextView>
+                </LinearLayout>
+
+                &lt;!&ndash; 홈 버튼 &ndash;&gt;
+                <LinearLayout
+                    android:id="@+id/ll_goHome"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="15">
+                    &lt;!&ndash;<ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="fill_parent"
+                        android:src="@drawable/icon_home"></ImageView>&ndash;&gt;
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="fill_parent"
+                        android:text="H"></TextView>
+                </LinearLayout>
+
+                &lt;!&ndash; 닫기 버튼 &ndash;&gt;
+                <LinearLayout
+                    android:id="@+id/ll_goClose"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="15">
+                    &lt;!&ndash;<ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="fill_parent"
+                        android:src="@drawable/icon_close"></ImageView>&ndash;&gt;
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="fill_parent"
+                        android:text="C"></TextView>
+                </LinearLayout>
+            </LinearLayout>-->
+
+
+            <!--<View
+                android:layout_width="match_parent"
+                android:layout_height="1.5dp"
+                android:layout_marginTop="12dp"
+                android:background="#333333"
+                ></View>-->
+
+            <!--<LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="12dp"
+                android:layout_weight="100"
+                android:overScrollMode="never"
+                android:scrollbars="none">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <GridView
+                        android:id="@+id/menu_grid"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:numColumns="3" />
+
+
+                </LinearLayout>
+            </LinearLayout>-->
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+</LinearLayout>

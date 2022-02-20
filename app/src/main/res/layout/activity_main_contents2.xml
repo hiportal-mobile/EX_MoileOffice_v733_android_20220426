@@ -1,0 +1,552 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:weightSum="500"
+    tools:context="com.ex.group.folder.MainActivity">
+
+
+    <RelativeLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="400">
+
+        <ImageView
+            android:id="@+id/main_bgbg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:scaleType="fitEnd" />
+
+        <LinearLayout
+            android:id="@+id/main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:weightSum="452">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="452"
+                android:orientation="horizontal"
+                android:weightSum="360">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="360"
+                    android:orientation="vertical"
+                    android:weightSum="100">
+
+                    <android.support.v4.widget.SwipeRefreshLayout
+                        android:id="@+id/main_swipe_refresh_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="75"
+
+                        >
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1">
+                            <!--배경 플러스 버튼1 시작-->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical"
+                                android:weightSum="3">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0dp"
+                                    android:layout_weight="1"
+                                    android:orientation="horizontal"
+                                    android:weightSum="4">
+
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/main_recycler_border"
+                                        android:clickable="true"
+                                        android:gravity="center"
+                                        android:orientation="vertical"
+                                        android:scaleType="fitCenter"
+                                        android:weightSum="100">
+                                        <!--                                    <ImageView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="50" android:src="@drawable/icon_plus" android:scaleType="fitCenter"/>-->
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/main_recycler_border"
+                                        android:gravity="center"
+                                        android:orientation="vertical"
+                                        android:scaleType="fitCenter"
+                                        android:weightSum="100">
+                                        <!--                                    <ImageView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="50" android:src="@drawable/icon_plus" android:scaleType="fitCenter"/>-->
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/main_recycler_border"
+                                        android:gravity="center"
+                                        android:orientation="vertical"
+                                        android:scaleType="fitCenter"
+                                        android:weightSum="100">
+                                        <!--                                    <ImageView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="50" android:src="@drawable/icon_plus" android:scaleType="fitCenter"/>-->
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/main_recycler_border"
+                                        android:gravity="center"
+                                        android:orientation="vertical"
+                                        android:scaleType="fitCenter"
+                                        android:weightSum="100">
+                                        <!--                                    <ImageView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="50" android:src="@drawable/icon_plus" android:scaleType="fitCenter"/>-->
+                                    </LinearLayout>
+
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0dp"
+                                    android:layout_weight="1"
+                                    android:orientation="horizontal"
+                                    android:weightSum="4">
+
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/main_recycler_border"
+                                        android:gravity="center"
+                                        android:orientation="vertical"
+                                        android:scaleType="fitCenter"
+                                        android:weightSum="100">
+                                        <!--                                    <ImageView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="50" android:src="@drawable/icon_plus" android:scaleType="fitCenter"/>-->
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/main_recycler_border"
+                                        android:gravity="center"
+                                        android:orientation="vertical"
+                                        android:scaleType="fitCenter"
+                                        android:weightSum="100">
+                                        <!--                                    <ImageView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="50" android:src="@drawable/icon_plus" android:scaleType="fitCenter"/>-->
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/main_recycler_border"
+                                        android:gravity="center"
+                                        android:orientation="vertical"
+                                        android:scaleType="fitCenter"
+                                        android:weightSum="100">
+                                        <!--                                    <ImageView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="50" android:src="@drawable/icon_plus" android:scaleType="fitCenter"/>-->
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/main_recycler_border"
+                                        android:gravity="center"
+                                        android:orientation="vertical"
+                                        android:scaleType="fitCenter"
+                                        android:weightSum="100">
+                                        <!--                                    <ImageView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="50" android:src="@drawable/icon_plus" android:scaleType="fitCenter"/>-->
+                                    </LinearLayout>
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0dp"
+                                    android:layout_weight="1"
+                                    android:orientation="horizontal"
+                                    android:weightSum="4">
+
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/main_recycler_border"
+                                        android:gravity="center"
+                                        android:orientation="vertical"
+                                        android:scaleType="fitCenter"
+                                        android:weightSum="100">
+                                        <!--                                    <ImageView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="50" android:src="@drawable/icon_plus" android:scaleType="fitCenter"/>-->
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/main_recycler_border"
+                                        android:gravity="center"
+                                        android:orientation="vertical"
+                                        android:scaleType="fitCenter"
+                                        android:weightSum="100">
+                                        <!--                                    <ImageView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="50" android:src="@drawable/icon_plus" android:scaleType="fitCenter"/>-->
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/main_recycler_border"
+                                        android:gravity="center"
+                                        android:orientation="vertical"
+                                        android:scaleType="fitCenter"
+                                        android:weightSum="100">
+                                        <!--                                    <ImageView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="50" android:src="@drawable/icon_plus" android:scaleType="fitCenter"/>-->
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/main_recycler_border"
+                                        android:gravity="center"
+                                        android:orientation="vertical"
+                                        android:scaleType="fitCenter"
+                                        android:weightSum="100">
+                                        <!--                                    <ImageView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="50" android:src="@drawable/icon_plus" android:scaleType="fitCenter"/>-->
+                                    </LinearLayout>
+                                </LinearLayout>
+                            </LinearLayout>
+                            <!--배경 플러스 버튼1 끝-->
+
+                            <android.support.v7.widget.RecyclerView
+                                android:id="@+id/main_recycler_gridview"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:nestedScrollingEnabled="false" />
+
+
+                        </FrameLayout>
+
+
+                    </android.support.v4.widget.SwipeRefreshLayout>
+
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="25"
+                        android:background="#e4edf5">
+                        <!--배경 플러스 버튼2 시작-->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="horizontal"
+                                android:weightSum="4">
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/main_recycler_border"
+                                    android:gravity="center"
+                                    android:orientation="vertical"
+                                    android:scaleType="fitCenter"
+                                    android:weightSum="100">
+                                    <!--                                <ImageView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="50" android:src="@drawable/icon_plus" android:scaleType="fitCenter"/>-->
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/main_recycler_border"
+                                    android:gravity="center"
+                                    android:orientation="vertical"
+                                    android:scaleType="fitCenter"
+                                    android:weightSum="100">
+                                    <!--                                <ImageView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="50" android:src="@drawable/icon_plus" android:scaleType="fitCenter"/>-->
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/main_recycler_border"
+                                    android:gravity="center"
+                                    android:orientation="vertical"
+                                    android:scaleType="fitCenter"
+                                    android:weightSum="100">
+                                    <!--                                <ImageView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="50" android:src="@drawable/icon_plus" android:scaleType="fitCenter"/>-->
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/main_recycler_border"
+                                    android:gravity="center"
+                                    android:orientation="vertical"
+                                    android:scaleType="fitCenter"
+                                    android:weightSum="100">
+                                    <!--                                <ImageView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="50" android:src="@drawable/icon_plus" android:scaleType="fitCenter"/>-->
+                                </LinearLayout>
+                            </LinearLayout>
+                        </LinearLayout>
+                        <!--배경 플러스 버튼2 끝-->
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/main_recycler_gridview2"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                    </FrameLayout>
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+        </LinearLayout>  <!--메인 리스트를 표출하는 리니어 레이아웃-->
+        <LinearLayout
+            android:id="@+id/refresh_layout"
+            android:layout_width="100dp"
+            android:layout_height="150dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="300dp"
+            android:background="@drawable/main_refresh"
+            android:gravity="center|top"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/main_refresh_lottie_button"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:scaleType="fitStart"
+                android:tint="@color/blue"
+                android:tintMode="add" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:text="화면을 길게\n 드래그 해주세요"
+                android:textColor="@color/white"
+                android:textSize="14dp" />
+            <!--android:text="화면을 길게\n 드래그 해주세요"-->
+
+        </LinearLayout>  <!--코치마크를 표출하는 리니어 레이아웃-->
+
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="100"
+        android:background="#444444"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:weightSum="403">
+
+        <LinearLayout
+            android:id="@+id/button_bottom_store"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="100"
+            android:background="@drawable/app_bg_selecter"
+            android:clickable="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:weightSum="100">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="25"
+                android:scaleType="fitCenter"
+                android:src="@drawable/f_icon_store" />
+
+            <TextView
+                android:id="@+id/tv_bottom_store"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="30"
+                android:gravity="center"
+                android:paddingTop="4sp"
+                android:text="스토어"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/app_bg_selecter"
+            android:clickable="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:weightSum="100">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="80"
+                android:background="@drawable/f_icon_line" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/button_bottom_trafficstate"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="100"
+            android:background="@drawable/app_bg_selecter"
+            android:clickable="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:weightSum="100">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="25"
+                android:scaleType="fitCenter"
+                android:src="@drawable/f_icon_chart" />
+
+            <TextView
+                android:id="@+id/tv_bottom_chart"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="30"
+                android:gravity="center"
+                android:paddingTop="4sp"
+                android:text="교통/영업현황"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/app_bg_selecter"
+            android:clickable="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:weightSum="100">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="80"
+                android:background="@drawable/f_icon_line" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/button_bottom_topic"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="100"
+            android:background="@drawable/app_bg_selecter"
+            android:clickable="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:weightSum="100">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="25"
+                android:scaleType="fitCenter"
+                android:src="@drawable/f_icon_news" />
+
+            <TextView
+                android:id="@+id/tv_bottom_news"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="30"
+                android:gravity="center"
+                android:paddingTop="4sp"
+                android:text="주요뉴스"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/app_bg_selecter"
+            android:clickable="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:weightSum="100">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="80"
+                android:background="@drawable/f_icon_line" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/button_bottom_diet"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="100"
+            android:background="@drawable/app_bg_selecter"
+            android:clickable="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:weightSum="100">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="25"
+                android:scaleType="fitCenter"
+                android:src="@drawable/f_icon_menu" />
+
+            <TextView
+                android:id="@+id/tv_bottom_menu"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="30"
+                android:gravity="center"
+                android:paddingTop="4sp"
+                android:text="식단"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+</LinearLayout>
+

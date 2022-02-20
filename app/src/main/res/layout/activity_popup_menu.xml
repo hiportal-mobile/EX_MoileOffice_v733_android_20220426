@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="top|right"
+
+    android:gravity="top|right"
+    android:orientation="horizontal"
+    android:weightSum="10"
+    >
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="7"
+        android:background="#d8dbe9"
+        android:orientation="vertical"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:weightSum="100"
+            >
+
+            <!-- 메뉴 상단 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:layout_marginTop="15dp"
+                android:weightSum="1"
+                >
+
+                <!-- 알람 -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:visibility="visible"
+                    android:weightSum="1"
+                    >
+
+
+                    <ImageView
+                        android:id="@+id/iv_new"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="10dp"
+                        android:src="@drawable/more_title"
+                        android:scaleType="fitCenter"
+                        ></ImageView>
+
+                    <TextView
+                        android:id="@+id/txt_version"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="5dp"
+                        android:layout_weight="1"
+                        android:gravity="left|center_vertical"
+                        android:textColor="#000000"
+                        android:textSize="17sp"
+                        android:text="   더보기"
+                        />
+
+                </LinearLayout>
+
+                <!-- 환경설정 -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:visibility="visible"
+                    >
+
+                    <ImageView
+                        android:id="@+id/btn_menu_user_info_hp"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:clickable="true"
+                        android:src="@drawable/icon_home"
+                        android:scaleType="fitCenter"
+                        ></ImageView>
+                </LinearLayout>
+
+                <!-- 메뉴 닫기 -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    >
+
+                    <ImageView
+                        android:id="@+id/btn_top_close_hp"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/icon_close"
+                        android:clickable="true"
+                        android:scaleType="fitCenter"
+                        ></ImageView>
+                </LinearLayout>
+            </LinearLayout>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1.5dp"
+                android:layout_marginTop="12dp"
+                android:background="#333333"
+                ></View>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="12dp"
+                android:layout_weight="100"
+                android:overScrollMode="never"
+                android:scrollbars="none"
+                >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    >
+
+                    <GridView
+                        android:id="@+id/menu_grid"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:horizontalSpacing="10dp"
+                        android:numColumns="3"
+                        android:verticalSpacing="20dp" />
+
+
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="top|right"
+            android:gravity="top|right"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:weightSum="100"
+            >
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#DDDDDD"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                >
+
+                <TextView
+
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="right|center_vertical"
+                    android:paddingLeft="20dp"
+                    android:paddingBottom="10dp"
+                    android:text=""
+                    android:textColor="#000000"
+                    android:textSize="13sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_menu"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="100"
+                android:orientation="vertical"
+                android:weightSum="13"
+                >
+
+                <!--공백 처리
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    >
+                </LinearLayout>
+                -->
+                <!--             PJSMOD_ubpay 간편결제 추가-->
+                <!--             작성자 : 박준상-->
+                <Button
+                    android:id="@+id/btn_menu_ubpay"
+                    android:layout_width="300dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/ic_news"
+                    android:gravity="center_vertical"
+                    ></Button>
+
+                <Button
+                    android:id="@+id/btn_menu_minap"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/ic_news"
+                    ></Button>
+
+
+                <Button
+                    android:id="@+id/btn_menu_hipass"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/ic_news"
+                    ></Button>
+
+
+                <Button
+                    android:id="@+id/btn_menu_nfc"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/ic_news"
+                    ></Button>
+
+
+                <!--2019/11/25 손진호 영상약정 버튼 추가-->
+                <Button
+                    android:id="@+id/btn_menu_video_contract"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/ic_news"
+                    ></Button>
+
+                <Button
+                    android:id="@+id/btn_menu_service"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/ic_news"
+                    ></Button>
+
+                <Button
+                    android:id="@+id/btn_menu_mypage"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/ic_news"
+                    ></Button>
+
+                <Button
+                    android:id="@+id/btn_menu_obu"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/ic_news"
+                    ></Button>
+
+                <Button
+                    android:id="@+id/btn_menu_refund"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/ic_news"
+                    ></Button>
+
+                <Button
+                    android:id="@+id/btn_menu_user_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/ic_news"
+                    ></Button>
+
+                <Button
+                    android:id="@+id/btn_menu_help"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/ic_news"
+                    ></Button>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_gravity="left"
+                    android:layout_margin="5dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_weight="2"
+                    android:gravity="left"
+                    android:orientation="vertical"
+                    >
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="left"
+                        android:scaleType="center"
+                        android:src="@drawable/ic_news" /><!--파워포인트로 생성 맑은고딕 20,16 아이콘은 도로공사 페이지들에서 추출 -->
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

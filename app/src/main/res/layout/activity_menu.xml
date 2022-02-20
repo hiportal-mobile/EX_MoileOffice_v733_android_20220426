@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MenuActivity"
+        >
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="640"
+        android:orientation="vertical"
+        android:gravity="center|top">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="46"
+            android:background="@color/main_title_bg">
+            <LinearLayout
+                android:background="#042244"
+                android:id="@+id/main_mobileoffice_title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:weightSum="360"
+                android:gravity="center">
+
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="6"/>
+                <ImageView
+                    android:id="@+id/button_prev"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="30"
+                    android:scaleType="fitCenter"
+                    />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="66"></LinearLayout>
+
+
+                <TextView
+                    android:gravity="center"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="136"
+                    android:textSize="17dp"
+                    android:textStyle="bold"
+                    android:scaleType="fitCenter"
+                    android:textColor="@color/white"
+                    android:text="식단표 조회"/>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="6"/>
+                <android.support.v4.widget.Space
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="106"/>
+
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="54"
+            android:gravity="center"
+            android:weightSum="360"
+            android:orientation="horizontal">
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="10"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_weight="80"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:textColor="@color/main_title_bg"
+                android:letterSpacing="0.4"
+                android:text="기관"
+                />
+
+            <TextView
+                android:id="@+id/menu_group"
+                android:layout_width="0dp"
+                android:layout_height="35dp"
+                android:layout_weight="120"
+                android:textSize="16sp"
+                android:textColor="@color/main_title_bg"
+                android:background="@drawable/menu_group"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:text="기관"/>
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="40"/>
+            <TextView
+                android:id="@+id/menu_back_today"
+                android:layout_width="0dp"
+                android:layout_height="35dp"
+                android:layout_weight="70"
+                android:textSize="16sp"
+                android:textColor="@color/white"
+                android:background="@drawable/menu_back_today"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:letterSpacing="0.4"
+                android:text="오늘"/>
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="40"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="540"
+            android:weightSum="540"
+            android:orientation="vertical"
+            android:background="#f2f2f2">
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="540"
+                android:weightSum="360"
+                android:orientation="horizontal"
+
+                >
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"/>
+
+                <android.support.v4.view.ViewPager
+                    android:visibility="visible"
+                    android:id="@+id/diet_chart"
+                    android:layout_width="0dp"
+
+                    android:layout_height="match_parent"
+                    android:layout_weight="354"></android.support.v4.view.ViewPager>
+
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"/>
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="640"
+        android:gravity="center|top"
+        android:orientation="vertical">
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="160"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="290"
+            android:paddingLeft="-15dp"
+            android:paddingRight="-15dp"
+            android:orientation="horizontal"
+            android:weightSum="9" >
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/lottie_leftside"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1.4"
+                app:lottie_colorFilter="@color/gray"
+                android:scaleType="fitCenter"/>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="6.2"/>
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/lottie_rightside"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                app:lottie_colorFilter="@color/gray"
+                android:layout_weight="1.4"
+                android:scaleType="fitCenter"/>
+
+
+
+
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="30"/>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="160"
+            android:gravity="center|right"
+            android:paddingRight="20dp">
+
+
+            <ImageView
+                android:id="@+id/fab_back"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginRight="30dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:background="@drawable/floating_close"
+                android:clickable="true"
+
+                android:elevation="3dp" />
+
+            <ImageView
+                android:id="@+id/fab_bdack"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:clickable="false"
+                android:elevation="3dp"
+                android:scaleType="fitCenter"
+                android:padding="15dp"
+                android:layout_marginRight="30dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:src="@drawable/floating_prev" />
+        </RelativeLayout>
+
+
+
+    </LinearLayout>
+
+
+
+</android.support.constraint.ConstraintLayout>
