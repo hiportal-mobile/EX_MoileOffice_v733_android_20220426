@@ -6,8 +6,10 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -18,6 +20,7 @@ import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.os.StrictMode;
 import android.provider.Settings;
@@ -33,9 +36,11 @@ import com.ex.group.approval.easy.util.RetrieveAppInfo;
 import com.ex.group.approval.easy.util.StringUtil;
 import com.ex.group.folder.dialog.CommonDialog_oneButton;
 //import com.ex.group.folder.service.StoreJobServiece;
+import com.ex.group.folder.dialog.CustomprogressDialog;
 import com.ex.group.folder.retrofitclient.APIClient;
 import com.ex.group.folder.retrofitclient.APIInterface;
 import com.ex.group.folder.retrofitclient.pojo.RequestLauncherInfo;
+import com.ex.group.folder.service.AppStateService;
 import com.ex.group.folder.service.FirebaseIDService;
 import com.ex.group.folder.service.FirebaseMessagingService;
 import com.ex.group.folder.utility.AppInfo;
@@ -47,6 +52,7 @@ import com.ex.group.folder.utility.LogMaker;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.skt.pe.common.vpn.SGVPNConnection;
 import com.sktelecom.ssm.lib.SSMLib;
 
 
@@ -86,6 +92,7 @@ import static com.ex.group.folder.utility.CommonUtil.clearApplicationData;
 import static com.ex.group.folder.utility.CommonUtil.getVersionName;
 import static com.ex.group.folder.utility.CommonUtil.isExistApp;
 import static com.ex.group.folder.utility.FolderUtil.isRooted;
+import static com.sktelecom.ssm.lib.constants.SSMProtocolParam.LOGOUT;
 import static com.sktelecom.ssm.remoteprotocols.ResultCode.OK;
 
 
@@ -129,7 +136,7 @@ public class IntroActivity extends BaseActivity {
 
     public String STORETAG = "◘◘◘◘◘ FROMSTORE@INTRO ◘◘◘◘◘";
     String mdmUrl = "https://mdm.ex.co.kr:52444/agent/setRegTargetDeviceInfoHphone.do";
-
+    CustomprogressDialog cpd;
 
     CommonDialog_oneButton finishDialog;
     public void clearFinishDialog(){
@@ -147,6 +154,21 @@ public class IntroActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro);
+
+        cpd = new CustomprogressDialog(IntroActivity.this, null);
+        cpd.show();
+        Intent intent = new Intent(ClientUtil.SGVPN_API);
+        Intent intent1 = intent.setPackage(ClientUtil.SGN_PACKAGE);
+        if (!bindService(intent, mConnection, BIND_AUTO_CREATE)) {
+            Log.e(TAG, "service bind error");
+        } else {
+            try {
+                startService(intent);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }//if else
 
         //2021-05-11 [EJY] App Data 삭제
         String appVerCurrent = checkNull(getVersionName(IntroActivity.this, getPackageName()));
@@ -206,6 +228,41 @@ public class IntroActivity extends BaseActivity {
         Log.d(TAG, "[EJY] onCreate() - END ");
 
     }
+
+    public static SGVPNConnection vpnConn;
+    public static IBinder tempService = null;
+    private IntroActivity.SgnServiceConnection mConnection = new IntroActivity.SgnServiceConnection();
+
+    private class SgnServiceConnection implements ServiceConnection {
+
+        public void destroyConnection() {
+            try {
+                unbindService(mConnection);
+            } catch (Exception e) {
+                Log.e(TAG, "onDestroy Exception : " + e);
+            }
+
+        }
+
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.e("IntroActivity.onServiceConnected", "===================비정상 종료시 VPN 종료가 정상적으로 되지않아 추가===================");
+
+            tempService = service;
+            if (vpnConn == null) {
+                vpnConn = SGVPNConnection.getInstance(service);
+
+                Log.e("IntroActivity.onServiceConnected", "===================VPN 상태값===================" + vpnConn.getStatus());
+                vpnConn.disconnection();
+                destroyConnection();
+                cpd.dismiss();
+            }
+        }
+
+        public void onServiceDisconnected(ComponentName name) {
+
+        }//onServiceDisconnected
+
+    }//SgnServiceConnection
 
     @Override
     protected void onResume() {
@@ -1187,8 +1244,8 @@ public class IntroActivity extends BaseActivity {
     View.OnClickListener preImeiDialogListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-              finishDialog.dismiss();
-              finish();
+            finishDialog.dismiss();
+            finish();
         }
     };
 
@@ -1349,11 +1406,11 @@ public class IntroActivity extends BaseActivity {
         apiInterface = APIClient.getClient().create(APIInterface.class);
 
         Call<RetrieveAppInfo> call = apiInterface.doGetRetrieveAppInfo(
-                                                "11111111"
-                                                , "EX"
-                                                , "A"
-                                                , "M"
-                                            );
+                "11111111"
+                , "EX"
+                , "A"
+                , "M"
+        );
         //Call<RetrieveAppInfo> call = apiInterface.doGetRetrieveAppInfo("21603226", "EX", "A", "M");
         //Call<RetrieveAppInfo> call = apiInterface.doGetRetrieveAppInfo("112233aa", "ETC", "A", "M");
         call.enqueue(new Callback<RetrieveAppInfo>() {
