@@ -1,6 +1,7 @@
 package com.ex.group.folder;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -9,6 +10,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -22,6 +24,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.os.RemoteException;
 import android.os.StrictMode;
 import android.provider.Settings;
 import android.support.annotation.MainThread;
@@ -34,6 +37,7 @@ import android.widget.Toast;
 
 import com.ex.group.approval.easy.util.RetrieveAppInfo;
 import com.ex.group.approval.easy.util.StringUtil;
+import com.ex.group.elecappmemo.ElecMemoAppWebViewActivity;
 import com.ex.group.folder.dialog.CommonDialog_oneButton;
 //import com.ex.group.folder.service.StoreJobServiece;
 import com.ex.group.folder.dialog.CustomprogressDialog;
@@ -47,6 +51,8 @@ import com.ex.group.folder.utility.AppInfo;
 import com.ex.group.folder.utility.BaseActivity;
 import com.ex.group.folder.utility.ClientUtil;
 import com.ex.group.folder.utility.CommonUtil;
+import com.ex.group.folder.utility.Constants;
+import com.ex.group.folder.utility.CustomVPN;
 import com.ex.group.folder.utility.FolderUtil;
 import com.ex.group.folder.utility.LogMaker;
 import com.google.firebase.FirebaseApp;
@@ -70,6 +76,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -77,6 +85,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.ex.group.elecappmemo.Global.ELEC_URL;
+import static com.ex.group.elecappmemo.Global.MEMO_URL;
 import static com.ex.group.folder.service.FirebaseMessagingService.NOTI_ID;
 import static com.ex.group.folder.utility.ClientUtil.APPNAME;
 import static com.ex.group.folder.utility.ClientUtil.EX_STORE_PACKAGE;
@@ -92,6 +102,7 @@ import static com.ex.group.folder.utility.CommonUtil.clearApplicationData;
 import static com.ex.group.folder.utility.CommonUtil.getVersionName;
 import static com.ex.group.folder.utility.CommonUtil.isExistApp;
 import static com.ex.group.folder.utility.FolderUtil.isRooted;
+import static com.skt.pe.common.conf.Constants.Status.PERMISSION_CHECK;
 import static com.sktelecom.ssm.lib.constants.SSMProtocolParam.LOGOUT;
 import static com.sktelecom.ssm.remoteprotocols.ResultCode.OK;
 
@@ -113,7 +124,7 @@ public class IntroActivity extends BaseActivity {
     String token;
     String today;
     String fcmDate;
-    SimpleDateFormat dateFormat;
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     long connectionTime;
     BluetoothAdapter bAdater;
     WifiManager wifi;
@@ -155,21 +166,25 @@ public class IntroActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro);
 
+        //job 등록
+        image1 = (ImageView) findViewById(R.id.image1);
+        image = (ImageView) findViewById(R.id.image);
         cpd = new CustomprogressDialog(IntroActivity.this, null);
         cpd.show();
         Intent intent = new Intent(ClientUtil.SGVPN_API);
-        Intent intent1 = intent.setPackage(ClientUtil.SGN_PACKAGE);
+        intent.setPackage(ClientUtil.SGN_PACKAGE);
         if (!bindService(intent, mConnection, BIND_AUTO_CREATE)) {
             Log.e(TAG, "service bind error");
-        } else {
-            try {
-                startService(intent);
+            destroyConnection();
+            finishDialog = new CommonDialog_oneButton(IntroActivity.this,
+                    "VPN 연결 실패", "모바일 업무망접속 앱이 설치 되지 않았습니다.\nex스토어에서 업무망접속 앱을 설치하시기 바랍니다.", false, finishListener2);
+            finishDialog.show();
+        }
+        CustomVPN.getInstance().setIntent(intent);
+    }
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }//if else
 
+    public void authChk(){
         //2021-05-11 [EJY] App Data 삭제
         String appVerCurrent = checkNull(getVersionName(IntroActivity.this, getPackageName()));
         String appVerSharedPref = checkNull(getSharedString("APPVER"));
@@ -182,10 +197,10 @@ public class IntroActivity extends BaseActivity {
             }
         }
 
-        if(permissionCheck()){
+        /*if(permissionCheck()){
             checkUserRegisterState();
-        }
-        Log.d(TAG, "[EJY] onCreate() - start ");
+        }*/
+        Log.d(TAG, "[EJY] authChk() - start ");
 
 
         Log.d(TAG,"token IntroActivity = "+FirebaseInstanceId.getInstance().getToken());
@@ -214,7 +229,6 @@ public class IntroActivity extends BaseActivity {
         }
         //2021.07 메모보고/전자결재 알림 on/off
         if(getSharedString("TOPIC_ELECAPP").equals("") || getSharedString("TOPIC_ELECAPP") == null ){
-            System.out.println(" TOPIC_ELECAPP Intro ======= " + getSharedString("TOPIC_ELECAPP") );
             setSharedString("TOPIC_ELECAPP","Y");
 
         }
@@ -225,62 +239,136 @@ public class IntroActivity extends BaseActivity {
         onStoreCallback();
 
 //        checkAppList();
-        Log.d(TAG, "[EJY] onCreate() - END ");
-
+        Log.d(TAG, "[EJY] authChk() - END ");
     }
 
     public static SGVPNConnection vpnConn;
     public static IBinder tempService = null;
     private IntroActivity.SgnServiceConnection mConnection = new IntroActivity.SgnServiceConnection();
 
-    private class SgnServiceConnection implements ServiceConnection {
-
-        public void destroyConnection() {
-            try {
-                unbindService(mConnection);
-            } catch (Exception e) {
-                Log.e(TAG, "onDestroy Exception : " + e);
-            }
-
+    public void destroyConnection() {
+        try {
+            Log.e(TAG, "service bind unbindService");
+            unbindService(mConnection);
+        } catch (Exception e) {
+            Log.e(TAG, "onDestroy Exception : " + e);
         }
+
+    }
+
+    private class SgnServiceConnection implements ServiceConnection {
 
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.e("IntroActivity.onServiceConnected", "===================비정상 종료시 VPN 종료가 정상적으로 되지않아 추가===================");
 
+            //바인드 객체는 사용 못합
+            //CustomVPN.getInstance().setBinder(service);
             tempService = service;
             if (vpnConn == null) {
                 vpnConn = SGVPNConnection.getInstance(service);
-
-                Log.e("IntroActivity.onServiceConnected", "===================VPN 상태값===================" + vpnConn.getStatus());
-                vpnConn.disconnection();
-                destroyConnection();
-                cpd.dismiss();
+                Log.e(TAG, "##### VPN CustomVPN.getInstance() : " + vpnConn);
             }
+            //컨넥션 인스턴스 객체를 전역으로 설정하여 다른 activity에서 사용가능하도록 설정
+            //이유 : vpn 어플에 바인드하여 통신 할 경우 모바일오피스가 일시 정지에 빠지면서 onresum을 1번 더 호출하는 현상이 발생
+            CustomVPN.getInstance().setVpnConn(vpnConn);
+
+            Log.i("", "Service Connected");
+            try {
+                PermissionVPNCheck(PERMISSION_CHECK);
+            } catch (RemoteException e) {
+                Log.i("", "onServiceConnected PermissionVPNCheck exception " + e);
+                e.printStackTrace();
+            }
+
+            Log.e("IntroActivity.onServiceConnected", "===================VPN 실행시 상태값===================" + vpnConn.getStatus());
         }
 
         public void onServiceDisconnected(ComponentName name) {
-
+            Log.i("SgnServiceConnection", "===================onServiceDisconnected===================");
         }//onServiceDisconnected
+    }
 
-    }//SgnServiceConnection
+    public void PermissionVPNCheck(int requestCode) throws RemoteException {
+        Log.i("", "PermissionVPNCheck======== tempservice is " + vpnConn.getTempService());
+        /*MobileApi objAidl = MobileApi.Stub.asInterface(tempService);*/
+        Intent PermissionVPNCheck = vpnConn.getPermissionCheck();
+        if (PermissionVPNCheck == null) {
+            Log.i("", "PermissionVPNCheck is null");
+            onActivityResult(requestCode, Activity.RESULT_OK, null);
+        } else {
+            Log.i("", "permissionchek is not null");
+            startActivityForResult(PermissionVPNCheck, requestCode);
+        }
+    }
 
     @Override
-    protected void onResume() {
-
-        super.onResume();
-        Log.v("=============", "---------------------------------------OnResume------------------------------------------------");
-        Log.d(TAG("Keepgoing STATE : "), String.valueOf(keepgoing));
-        if (keepgoing) {
-
-            boolean resultPermission = false;
-            resultPermission = permissionCheck();
-
-            if (resultPermission == true) {
-                checkPhoneState();
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.e(TAG("onActivityResult"),"resultCode:"+resultCode+"  requestCode: "+ requestCode);
+        Log.e(TAG("onActivityResult"),"data:"+data);
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PERMISSION_CHECK && resultCode == VPN_SERVICE_PERMISSION_ALLOW) {
+            Log.i(TAG("에스지엔 PERMISSION"), "onActivityResult ... PERMISSION_CHECK .. VPN_SERVICE_PERMISSION_ALLOW ");
+            try {
+                //permissionCheck();
+                prepareStartProfile(APP_PERMISSION_RETURN);
+            } catch (RemoteException e) {
+                System.out.println("ERR : " + e);
             }
+
+        } else if (resultCode == Activity.RESULT_CANCELED && requestCode == APP_PERMISSION_RETURN) {
+            Log.i(TAG("에스지엔 PERMISSION"), "onActivityResult ... Activity.RESULT_CANCELED  START_PROFILE_EMBEDDED");
+            //VPN-service 앱에서 사용할 권한 거부.. 앱 종료.
+            Toast.makeText(IntroActivity.this, R.string.permission_grant, Toast.LENGTH_SHORT).show();
+            setSharedString("LOGINSTATE", "LOGOUT");
+            vpnConn.disconnection();
+            finish();
+
+        } else if (requestCode == PERMISSION_CHECK && resultCode == VPN_SERVICE_PERMISSION_DNEY) {
+            Log.i(TAG("에스지엔 PERMISSION"), "onActivityResult ... PERMISSION_CHECK .. VPN_SERVICE_PERMISSION_DNEY ");
+            //VPN service를 위한 권한 거부.. 앱 종료, 전화,저장공간.
+            Toast.makeText(IntroActivity.this, R.string.permission_grant, Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(Uri.parse("package:" + ClientUtil.SGN_PACKAGE));
+            startActivity(intent);
+            setSharedString("LOGINSTATE", "LOGOUT");
+            vpnConn.disconnection();
+            finish();
+        } else if (requestCode == APP_PERMISSION_RETURN && resultCode == -1) {
+            Log.e(TAG, "onActivityResult ... 모바일 오피스 .. 권한 체크 시작============= ");
+            /*try {
+                Log.e(TAG, "onResume ... startService(CustomVPN.getInstance().getIntent())============= ");
+                startService(CustomVPN.getInstance().getIntent());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }*/
+            vpnConn.disconnection();
+            destroyConnection();
+            permissionCheck();
+
+            cpd.dismiss();
         }
+    }//SgnServiceConnection
 
+    // Package 설치여부 확인
+    private void prepareStartProfile(int requestCode) throws RemoteException {
 
+        Intent requestpermission = vpnConn.getService();
+        Log.i(TAG("에스지엔 PERMISSION"), "prepareStartProfile : " + requestpermission);
+        if (requestpermission == null) {
+            Log.i(TAG("에스지엔 PERMISSION"), "==========prepareStartProfile is null");
+            onActivityResult(requestCode, Activity.RESULT_OK, null);
+        } else {
+            Log.i(TAG("에스지엔 PERMISSION"), "==========prepareStartProfile is not  null requestCode" + requestCode );
+            startActivityForResult(requestpermission, requestCode);
+        }
+    }
+
+    public boolean vpnStartFlag = true;
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(vpnStartFlag){
+            vpnStartFlag = false;
+        }
     }
 
     public void checkUserRegisterState() {
@@ -484,10 +572,6 @@ public class IntroActivity extends BaseActivity {
     public void keepCreate() {
         Log.d(TAG, "[EJY] keepCreate() - start ");
 
-        //job 등록
-        image1 = (ImageView) findViewById(R.id.image1);
-        image = (ImageView) findViewById(R.id.image);
-
         //Intro를 시작할때 스토어에서 시작한 부분이라면 메세지를 받아서 진행한다.
 
         ssmLib = SSMLib.getInstance(IntroActivity.this);
@@ -568,7 +652,7 @@ public class IntroActivity extends BaseActivity {
         LogMaker.logEnd();
 
 
-        dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        //dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         today = dateFormat.format(new Date());
 
 
@@ -582,12 +666,12 @@ public class IntroActivity extends BaseActivity {
         LogMaker.logEnd();
 
 
-        boolean resultPermission = false;
+        /*boolean resultPermission = false;
         resultPermission = permissionCheck();
 
         if (resultPermission == true) {
             checkPhoneState();
-        }
+        }*/
 
         Log.d(TAG, "[EJY] keepCreate() - END ");
     }
@@ -1267,6 +1351,12 @@ public class IntroActivity extends BaseActivity {
     };
 
     public boolean permissionCheck() {
+        Log.i(TAG, "=========permissionCheck========= FIRSTRUN : " + getSharedString("FIRSTRUN"));
+        Log.i(TAG, "=========permissionCheck========= READ_PHONE_STATE : " + checkSelfPermission(android.Manifest.permission.READ_PHONE_STATE));
+        Log.i(TAG, "=========permissionCheck========= WRITE_EXTERNAL_STORAGE : " + checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE));
+        Log.i(TAG, "=========permissionCheck========= READ_SMS : " + checkSelfPermission(android.Manifest.permission.READ_SMS));
+        Log.i(TAG, "=========permissionCheck========= WRITE_CONTACTS : " + checkSelfPermission(android.Manifest.permission.WRITE_CONTACTS));
+        Log.i(TAG, "=========permissionCheck========= USE_FINGERPRINT : " + checkSelfPermission(android.Manifest.permission.USE_FINGERPRINT));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED
                     || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
@@ -1276,11 +1366,12 @@ public class IntroActivity extends BaseActivity {
                 requestPermissions(CommonUtil.permissions, CommonUtil.PERMISSIONS_REQUEST_READ_PHONE_STATE);
                 return false;
             } else {
-                if ("".equals(getSharedString("FIRSTRUN"))) {
+                /*if ("".equals(getSharedString("FIRSTRUN"))) {
                     requestPermissions(CommonUtil.permissions, CommonUtil.PERMISSIONS_REQUEST_READ_PHONE_STATE);
                     setSharedString("FIRSTRUN", "Y");
-
-                }
+                }*/
+                authChk();
+                checkPhoneState();
                 return true;
             }
         } else {
@@ -1299,8 +1390,11 @@ public class IntroActivity extends BaseActivity {
 
         switch (requestCode) {
             case 2:
-                Log.v("", "=\n\n=======================onRequestPermissionResult=======================");
+                Log.v(TAG, "=\n\n=======================onRequestPermissionResult=======================");
                 if (new CommonUtil().hasAllPermissionGranted(grantResults)) {
+                    Log.v(TAG, "=\n\n=======================onRequestPermissionResult 권한 허용 완료=======================");
+                    authChk();
+                    checkPhoneState();
                 } else {
                     Toast.makeText(IntroActivity.this, R.string.permission_grant, Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(Uri.parse("package:+" + getApplicationContext().getPackageName()));
@@ -1315,7 +1409,7 @@ public class IntroActivity extends BaseActivity {
     @Override
     protected void onStop() {
         super.onStop();
-
+        if(vpnConn != null)vpnConn.disconnection();
     }
 
 

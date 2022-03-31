@@ -60,10 +60,13 @@ import com.ex.group.folder.utility.BaseActivity;
 import com.ex.group.folder.dialog.CustomprogressDialog;
 import com.ex.group.folder.utility.ClientUtil;
 import com.ex.group.folder.utility.CommonUtil;
+import com.ex.group.folder.utility.Constants;
+import com.ex.group.folder.utility.CustomVPN;
 import com.ex.group.folder.utility.LogMaker;
 import com.nprotect.keycryptm.IxCustomInputActivity;
 import com.samsung.android.sdk.pass.Spass;
 import com.samsung.android.sdk.pass.SpassFingerprint;
+import com.skt.pe.common.vpn.SGVPNConnection;
 import com.sktelecom.ssm.lib.SSMLib;
 
 import java.io.IOException;
@@ -115,7 +118,7 @@ public class LoginActivity extends BaseActivity implements Handler.Callback, Vie
             CustomprogressDialog cpd;
             public CommonDialog loginCommonDialog;
             public CommonDialog_oneButton loginCommonDialog_oneButton;
-            public CommonDialog finishDialog;
+            public CommonDialog_oneButton finishDialog;
             public SharedPreferences Pref;
             public SharedPreferences.Editor edit;
             long connectionTime;
@@ -189,7 +192,7 @@ public class LoginActivity extends BaseActivity implements Handler.Callback, Vie
     /*▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄*/
     /*    security code   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
         public final int KEY_PWD = 900;
-
+        SGVPNConnection vpnConn = CustomVPN.getInstance().getVpnConn();
     /*▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄*/
 
 
@@ -204,6 +207,15 @@ public class LoginActivity extends BaseActivity implements Handler.Callback, Vie
                 Log.d(TAG, "[EJY] onCreate() - START ");
                 Log.v("=========", "--------------------------------------------------------OnCreate--------------------------------------------");
                 super.onCreate(savedInstanceState);
+
+                Log.e("LoginActivity.onServiceConnected", "===================VPN 실행시 상태값===================" + vpnConn.getStatus());
+                if(vpnConn.getStatus() == Constants.Status.Connection_N_Status.LEVEL_CONNECTED.ordinal() || vpnConn.getStatus() == Constants.Status.Connection_N_Status.LEVEL_DUP_LOGIN.ordinal() ){
+                    finishDialog = new CommonDialog_oneButton(LoginActivity.this,
+                            "VPN 비상정 종료", "VPN이 비정상으로 종료되어 앱을 다시 실행 하시기 바랍니다.", false, finishListener2);
+                    finishDialog.show();
+                }
+
+                vpnConn.disconnection();
 
                 //디바이스가 가지고 있는 정보 중  모델명 등 을 가져 오기 위한 방법으로 아주 간단함.
                 Log.e(TAG("MODEL"),Build.MODEL);
@@ -428,6 +440,16 @@ public class LoginActivity extends BaseActivity implements Handler.Callback, Vie
     /*█                                                                                                                                                                                                  █*/
     /*█                                                                                                                                                                                                  █*/
     /*█                                                                                                                                                                                                  █*/
+
+
+            View.OnClickListener finishListener2 = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finishDialog.dismiss();
+                    vpnConn.disconnection();
+                    finish();
+                }
+            };
             public void UI_SETTING() {
                 Log.d(TAG, "[EJY] UI_SETTING() - START ");
                 LogMaker.logStart();

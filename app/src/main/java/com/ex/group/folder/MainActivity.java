@@ -29,10 +29,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.IInterface;
+import android.os.Parcel;
 import android.os.RemoteException;
 import android.os.Vibrator;
 import android.provider.Settings;
 import android.support.annotation.Dimension;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -91,6 +95,7 @@ import com.ex.group.folder.utility.BaseActivity;
 import com.ex.group.folder.utility.ClientUtil;
 import com.ex.group.folder.utility.CommonUtil;
 import com.ex.group.folder.utility.Constants;
+import com.ex.group.folder.utility.CustomVPN;
 import com.ex.group.folder.utility.LogMaker;
 import com.ex.group.mail.activity.EmailMainActivity;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -98,6 +103,7 @@ import com.skt.pe.common.vpn.SGVPNConnection;
 import com.sktelecom.ssm.lib.SSMLib;
 import com.sktelecom.ssm.lib.constants.SSMProtocolParam;
 
+import java.io.FileDescriptor;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -430,13 +436,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             @Override
             public void onClick(View v) {
                 try {
-                    if (cpd != null) {
-                        if (cpd.isShowing()) {
-                            cpd.setCancelable(true);
-                            cpd.dismiss();
-                            cpd = null;
-                        }
-                    }
+                    disCpd();
                     commonDialog = new CommonDialog(MainActivity.this, getString(R.string.Exit), "모바일오피스를 종료하시겠습니까?", false,
                             new View.OnClickListener() {
                                 @Override
@@ -567,28 +567,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         v.vibrate(i);
     }
 
-    /*boolean isAppstateConn = false;
-    ServiceConnection AppstateConn = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder service) {
-            AppStateService.LocalBinder mb = (AppStateService.LocalBinder) service;
-            myAppStateService = mb.getService();
-            isAppstateConn = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            Toast.makeText(getApplicationContext(),
-                    "서비스 연결 해제",
-                    Toast.LENGTH_LONG).show();
-            isAppstateConn = false;
-        }
-    };*/
-
-    /*private void subscribeTestTopic(){
-        Log.e(TAG("FCMTEST"),"정상적으로 등록되었습니다.");
-        FirebaseMessaging.getInstance().subscribeToTopic("testHoliday");
-    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -713,7 +691,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         Log.e(TAG, "==MEMORY==\n\n" + "CURRENTMEMORY : " + Runtime.getRuntime().totalMemory() + "\nMAXCURRENT : " + Runtime.getRuntime().maxMemory() + "\nAFFORDABLE : " + Runtime.getRuntime().freeMemory());
         setView();
         ssmLib = SSMLib.getInstance(MainActivity.this);
-        //ssmLib.setLoginStatus(LOGIN);
+        ssmLib.setLoginStatus(LOGIN);
         userPref = getSharedPreferences("USERINFO", MODE_PRIVATE);
 
 
@@ -722,7 +700,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mContext = getBaseContext();
         currentStoreVersion();
         getDownloadableApp();
-        getAlarmCnt();
+        //getAlarmCnt();
         getInitInfo();//앱목록 조회 http://store.ex.co.kr/mobilerelay/retrieveInitInfo.do?userId=22071435&userType=EX&platformCd=A&deviceType=M
         //getAppInfoFromServer();
         setTouchHelper(app_adapter);
@@ -735,6 +713,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         connectionTime = getSharedlong("CONNECTIONTIME");
         onClick();
+
         Log.e(TAG, "AT LAST");
         Log.e(TAG, "==MEMORY==\n\n" + "CURRENTMEMORY : " + Runtime.getRuntime().totalMemory() + "\nMAXCURRENT : " + Runtime.getRuntime().maxMemory() + "\nAFFORDABLE : " + Runtime.getRuntime().freeMemory());
 
@@ -766,114 +745,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         } catch (Exception ignored) { } // for now eat exceptions
         return "";
     }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        final Intent intent1 = intent;
-
-        if (intent1.getStringExtra("packageName") != null) {
-            cpd_store = new CustomprogressDialog(MainActivity.this, "준비중입니다.");
-            cpd_store.show();
-            drawer.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    cpd_store.dismiss();
-
-                    Log.e(STORETAG, "SUCCESS! pacakgeName is " + intent1.getStringExtra("packageName"));
-                    /*wifi.setWifiEnabled(false);*/
-                    //VPN RECEIVER가 등록돼있지 않다면 진입
-                    if (mVpnReceiver == null) {
-                        IntentFilter intentFilter = new IntentFilter(ClientUtil.SGVPN_STATUS);
-                        registerReceiver(mVpnReceiver, intentFilter);
-                    }
-
-                    if (vpnConn == null) {
-                        logmaking("START VPN", "vpn instance is null!!!!");
-                        vpnConn = SGVPNConnection.getInstance(tempService);
-                    }
-
-                    if (vpnConn.getStatus() != Constants.Status.Connection_N_Status.LEVEL_CONNECTED.ordinal()) {
-                        Log.e(STORETAG, "VPN IS NOT CONNECTED TRYINGTOCONNENTING");
-                        VPNpackageName = intent1.getStringExtra("packageName");
-                        start_vpn();
-                    } else {
-                        Log.e(STORETAG, "VPN IS CONNECTED");
-                        try {
-                            Intent intent2 = new Intent(intent1.getStringExtra("packageName") + ".LAUNCH_MAIN");
-                            intent2.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            intent2.putExtra("userId", getSharedString("USERID"));
-                            startActivity(intent2);
-                            Log.e(STORETAG, "Launching Package " + intent1.getStringExtra("packageName"));
-                        } catch (Exception e) {
-                            Intent intent2 = getPackageManager().getLaunchIntentForPackage(intent1.getStringExtra("packageName").toString());
-                            intent2.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            intent2.putExtra("userId", getSharedString("USERID"));
-                            startActivity(intent2);
-                            Log.e(STORETAG, "LaunchIntentForPackage " + intent1.getStringExtra("packageName"));
-                        }
-                    }
-                }
-            }, 3000);
-
-        } else if (intent1.getStringExtra("finishApp") != null) {
-            if (intent1.getStringExtra("finishApp").equals("Y")) {
-
-                try {
-                    //vpnConn.disconnection();
-                    destroyConnection();
-                    finishAndRemoveTask(MainActivity.this);
-                } catch (Exception e) {
-                }
-            }
-        } else {
-            Log.e(STORETAG, "FAILED BECAUSE MESSAGE IS NULL");
-        }
-
-    }
-
-    LottieAnimationView lottie_Refresh;
-    public boolean vpnStartFlag = true;
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        netWorkStateCheck();
-        if (cpd != null) {
-            cpd.dismiss();
-            cpd = null;
-        }
-        /*▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀*/
-        if(vpnStartFlag == true){
-            Log.e(TAG, "##### VPN 메인화면 접속 시 실행 111111");
-            if(vpnConn != null){
-                Log.e(TAG, "##### VPN 메인화면 접속 시 실행 true - vpnConn.getStatus() : " + vpnConn.getStatus());
-                if (vpnConn.getStatus() != Constants.Status.Connection_N_Status.LEVEL_CONNECTED.ordinal() || vpnConn.getStatus() == -1) {
-                    Log.e(TAG, "##### VPN 메인화면 접속 시 실행 333333");
-                    vpnConn.connection(getSharedString("USERID"), getSharedString("USERPWD"));
-                    vpnStartFlag = false;
-                    cpd = new CustomprogressDialog(MainActivity.this, null);
-                    cpd.setCancelable(false);
-                    cpd.setContent("");
-                    cpd.show();
-                }
-            }
-        }else{
-            if(vpnConn != null) {
-                Log.e(TAG, "##### VPN 메인화면 접속 시 실행 false - vpnConn.getStatus() : " + vpnConn.getStatus());
-            }
-        }
-        mvpnstate = true;
-        Log.v(TAG, "===onResume===");
-
-        //2021.07 메모보고/전자결재/메일 현황체크
-        getElecMemocount(CopyData);
-        getMailcount(CopyData);
-        getAlarmCnt();  //알림 카운트 조회
-
+    public void binderVpn(){
         Intent intent = new Intent(ClientUtil.SGVPN_API);
         intent.setPackage(ClientUtil.SGN_PACKAGE);
-
         if (!bindService(intent, mConnection, BIND_AUTO_CREATE)) {
             Log.i(TAG, "service bind error");
         } else {
@@ -886,19 +760,154 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             }
         }
 
-        Log.i(TAG, "==========static showProgress visible ==========" + "START VPN");
-        Log.v(TAG, "===registerVPNRECEIVER===");
+    }
+
+    private MainActivity.SgnServiceConnection mConnection = new MainActivity.SgnServiceConnection();
+
+    private class SgnServiceConnection implements ServiceConnection {
+
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.e(TAG, "===================onServiceConnected===================");
+            if (vpnConn == null) {
+                vpnConn = SGVPNConnection.getInstance(service);
+                Log.e(TAG, "##### VPN CustomVPN.getInstance() : " + vpnConn);
+            }
+
+            wifi_flag();
+        }
+
+        public void onServiceDisconnected(ComponentName name) {
+            Log.i(TAG, "===================onServiceDisconnected===================");
+        }//onServiceDisconnected
+    }
+
+
+
+    LottieAnimationView lottie_Refresh;
+    public CommonDialog commonDialog1m;
+    int vpnstatusCnt = 0;
+    public void start_vpn(){
+
+        /*if (vpnConn == null) {
+            Log.e(TAG, "##### VPN CustomVPN.getInstance() : " + CustomVPN.getInstance().getVpnConn());
+            vpnConn = CustomVPN.getInstance().getVpnConn();//SGVPNConnection.getInstance(CustomVPN.getInstance().getBinder());
+        }*/
+
+        if(vpnConn != null){
+            if (vpnConn.getStatus() != Constants.Status.Connection_N_Status.LEVEL_CONNECTED.ordinal()) {
+                Log.e(TAG, "##### VPN 메인화면 접속 시 실행 true - vpnConn.getStatus() : " + vpnConn.getStatus());
+                vpnConn.connection(getSharedString("USERID"), getSharedString("USERPWD"));
+                cpd = new CustomprogressDialog(MainActivity.this, null);
+                cpd.setCancelable(false);
+                cpd.setContent("");
+                cpd.show();
+            }
+
+            //vpn연결이 비정상이거나 정상일거나 상관없이 recvice를받지 못하는경우 타임머로 이중 체크
+            vpnstatusCnt = 0;
+            ConnectionTimmerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    if(vpnstatusCnt == 6) {
+                        if (vpnConn.getStatus() != Constants.Status.Connection_N_Status.LEVEL_CONNECTED.ordinal()) {
+                            disCpd();
+                        }
+                        timer.cancel();
+                        timer.purge();
+                        ConnectionTimmerTask.cancel();
+                    }
+
+                    if (vpnConn.getStatus() == Constants.Status.Connection_N_Status.LEVEL_CONNECTED.ordinal()) {
+                        disCpd();
+                        timer.cancel();
+                        timer.purge();
+                        ConnectionTimmerTask.cancel();
+                    }
+                    Log.e(TAG, "##### VPN 메인화면 접속 시 실행 true - ConnectionTimmerTask vpnConn.getStatus() : " + vpnConn.getStatus());
+                    vpnstatusCnt++;
+                }
+            };
+            timer = new Timer();
+            timer.schedule(ConnectionTimmerTask, 1000, 1200);
+        }
+    }
+
+    //2021-03-31 [EJY] VPN 연결 끊기 메소드 생성
+    public void disVpnConn() {
+        ssmLib.setLoginStatus(LOGOUT);
+        mvpnstate = false;
+        //if(vpnConn != null)vpnConn.disconnection();
+        destroyConnection();
+
+        if(commonDialog != null) {
+            commonDialog.dismiss();
+        }
+    }
+
+    public void disCpd() {
+        if(cpd != null){
+            if (cpd.isShowing()) {
+                cpd.setCancelable(true);
+                cpd.dismiss();
+                cpd = null;
+            }
+        }
+    }
+
+    public void disconn_vpn(){
+        commonDialog_oneButton = new CommonDialog_oneButton(MainActivity.this, "업무망 접속 해제", "업무망 접속이 해지되었습니다.\n앱을 다시 실행하시기 바랍니다." , false,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        commonDialog_oneButton.dismiss();
+                        commonDialog_oneButton = null;
+                        finish();
+                    }
+                });
+        commonDialog_oneButton.show();
+    }
+
+    public void wifi_flag(){
+        Log.e(TAG, "##### Wi-Fi 체크 : " + CommonUtil.getMobileData(MainActivity.this));
+        if (CommonUtil.getMobileData(MainActivity.this) == TYPE_WIFI) {        // Wi-Fi 켜져 있을 경우
+            wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            commonDialog_oneButton = new CommonDialog_oneButton(MainActivity.this, "Wi-Fi 접속 해제", getString(R.string.wifi_network) , false,
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            wifi.setWifiEnabled(false);
+                            start_vpn();
+                            commonDialog_oneButton.dismiss();
+                            commonDialog_oneButton = null;
+                        }
+                    });
+            commonDialog_oneButton.show();
+        }else{
+            start_vpn();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.v(TAG, "===onResume===");
+        netWorkStateCheck();
+
+
+        binderVpn();
+        mvpnstate = true;
+
+        //2021.07 메모보고/전자결재/메일 현황체크
+        getElecMemocount(CopyData);
+        getMailcount(CopyData);
+        getAlarmCnt();  //알림 카운트 조회
+
         IntentFilter intentFilter = new IntentFilter(ClientUtil.SGVPN_STATUS);
         registerReceiver(mVpnReceiver, intentFilter);
-        Log.i(TAG, "==========static showProgress visible ==========" + "REGISTER RECEIVER");
 
 
-        //vpn상태가 접속상태가 아니라면 textView를 없애준다.
-        if (vpnConn == null) {
-            text_name.setText(getSharedString("USERNAME"));
-        } else if (vpnConn != null && vpnConn.getStatus() != Constants.Status.Connection_N_Status.LEVEL_CONNECTED.ordinal()) {
-            text_name.setText(getSharedString("USERNAME"));
-        }
+
+        text_name.setText(getSharedString("USERNAME"));
         IntentFilter intfil = new IntentFilter("com.ex.group.store.REFRESH_APP");
         registerReceiver(AppRefreshReceiver, intfil);
 
@@ -920,108 +929,25 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             lottie_Refresh.playAnimation();
             refresh = false;
         }
+
     }
 
     @Override
     protected void onPause() {
-        vpnStartFlag = true;
         super.onPause();
         reNewDBINFO( app_adapter.getAppdataLists());
-        Log.v(TAG, "unRegistermVpnReceiver");
-        if (cpd != null) {
-            //progressState(false, "비정상종료", 99);
-        }
+        Log.v(TAG, "onPause unRegistermVpnReceiver");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.v(TAG, "unRegistermVpnReceiver");
+        Log.v(TAG, "onStop unRegistermVpnReceiver");
         try {
             if (mVpnReceiver != null) {
-                // unregisterReceiver(mVpnReceiver);
-            }
-            if (cpd != null) {
-                //progressState(false, "비정상종료", 99);
+                unregisterReceiver(mVpnReceiver);
             }
         } catch (Exception e) {
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.e(TAG("onActivityResult"),"resultCode:"+resultCode+"  requestCode: "+ requestCode);
-        Log.e(TAG("onActivityResult"),"data:"+data);
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PERMISSION_CHECK && resultCode == VPN_SERVICE_PERMISSION_ALLOW) {
-            Log.i(TAG("에스지엔 PERMISSION"), "onActivityResult ... PERMISSION_CHECK .. VPN_SERVICE_PERMISSION_ALLOW ");
-            try {
-                prepareStartProfile(APP_PERMISSION_RETURN);
-            } catch (RemoteException e) {
-                System.out.println("ERR : " + e);
-            }
-
-        } else if (resultCode == Activity.RESULT_CANCELED && requestCode == APP_PERMISSION_RETURN) {
-            Log.i(TAG("에스지엔 PERMISSION"), "onActivityResult ... Activity.RESULT_CANCELED  START_PROFILE_EMBEDDED");
-            //VPN-service 앱에서 사용할 권한 거부.. 앱 종료.
-            Toast.makeText(MainActivity.this, R.string.permission_grant, Toast.LENGTH_SHORT).show();
-            setSharedString("LOGINSTATE", "LOGOUT");
-            vpnConn.disconnection();
-            destroyConnection();
-            finish();
-
-        } else if (requestCode == PERMISSION_CHECK && resultCode == VPN_SERVICE_PERMISSION_DNEY) {
-            Log.i(TAG("에스지엔 PERMISSION"), "onActivityResult ... PERMISSION_CHECK .. VPN_SERVICE_PERMISSION_DNEY ");
-            //VPN service를 위한 권한 거부.. 앱 종료, 전화,저장공간.
-            Toast.makeText(MainActivity.this, R.string.permission_grant, Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(Uri.parse("package:" + ClientUtil.SGN_PACKAGE));
-            startActivity(intent);
-            setSharedString("LOGINSTATE", "LOGOUT");
-            vpnConn.disconnection();
-            destroyConnection();
-            finish();
-
-        }else if(/*resultCode == RESULT_OK && */requestCode == 7777){
-            String app = "";
-            if(data != null) {
-                app = checkNull(data.getStringExtra("app"));
-            } else {
-                app = "N";
-            }
-            Log.d(TAG, "AlarmList - app : "+app);
-//            getAlarmCnt();
-//            String app = checkNull(data.getStringExtra("app"));
-            if (app.equals("E")) {
-                VPNpackageName = ELEC_PKGNM;
-            }else if (app.equals("M")) {
-                VPNpackageName = MEMO_PKGNM;
-            } else {
-                System.out.println("-------------------------------------------- 알림카운트  3");
-                getAlarmCnt();
-                return;
-            }
-
-            if (mVpnReceiver == null) {
-                IntentFilter intentFilter = new IntentFilter(ClientUtil.SGVPN_STATUS);
-                registerReceiver(mVpnReceiver, intentFilter);
-            }
-
-            //VPNCONNECTION STATUS가 접속상태 ?  VPN 접속 : 앱실행
-            if (vpnConn.getStatus() != Constants.Status.Connection_N_Status.LEVEL_CONNECTED.ordinal()) {
-                start_vpn();
-            } else if (vpnConn.getStatus() == Constants.Status.Connection_N_Status.LEVEL_CONNECTED.ordinal()) {
-                if (app.equals("E")) {
-                    Intent intent = new Intent(MainActivity.this, ElecMemoAppWebViewActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    intent.putExtra("hybridUrl", ELEC_URL);
-                    startActivity(intent);
-                } else if (app.equals("M")) {
-                    Intent intent = new Intent(MainActivity.this, ElecMemoAppWebViewActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    intent.putExtra("hybridUrl", MEMO_URL);
-                    startActivity(intent);
-                }
-            }
         }
     }
 
@@ -1037,20 +963,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                             drawer.closeDrawer(GravityCompat.END);
                         } else {
                             try {
-                                if (cpd != null) {
-                                    if (cpd.isShowing()) {
-                                        cpd.setCancelable(true);
-                                        cpd.dismiss();
-                                        cpd = null;
-                                    }
-                                }
+                                disCpd();
                                 commonDialog = new CommonDialog(MainActivity.this, getString(R.string.Exit), "모바일오피스를 종료하시겠습니까?", false,
                                         new View.OnClickListener() {
                                             @Override
                                             public void onClick(View view) {
-                            /*if (mVpnReceiver != null) {
-                                unregisterReceiver(mVpnReceiver);
-                            }*/
                                                 ssmLib.setLoginStatus(LOGOUT);
                                                 mvpnstate = false;
                                                 vpnConn.disconnection();
@@ -1227,7 +1144,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     }
                 }
 
-                getMailcount(copydata);
+                //getMailcount(copydata);
             }
 
             @Override
@@ -1526,7 +1443,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 if (getSharedString("USERTYPE").equals("EX")){    //loginAction 에서 가져온 usertype이 EX 일 경우에만 FIXXED APP 을 설정한다.
                     //2021-04-19 [EJY]
                     //getMailcount(CopyData);
-                    getElecMemocount(CopyData);
+                    //getElecMemocount(CopyData);
                 }
 
                 List<RequestInitInfo.NoticeList> noticeList = response.body().noticeList;
@@ -1677,74 +1594,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         String[] essentialYn = {"Y", "Y", "Y", "Y", "Y", "Y", "N"};
         String[] packageNm = {"외출휴가", "게시판", "사내메일", "직원검색", "전자결재", "메모보고", EX_STORE_PACKAGE};
         int[] drawable = {R.drawable.app_icon_ok_selecter, R.drawable.app_icon_board_selecter, R.drawable.app_icon_mail_selecter, R.drawable.app_icon_searchman_selecter, R.drawable.app_icon_searchman_selecter, R.drawable.app_icon_searchman_selecter, R.drawable.app_icon_store_selecter};
-
-        /*for (int i = 4 ; i<6; i++){
-            Log.e(TAG, "App FOR ETC ");
-            AppdataList CD = new AppdataList();
-
-            if (getSharedString("CURRENTSTOREVERSION").equals(getSharedString("NEWSTOREVERSION"))) {
-                CD.setNeedUpdate("N");
-            } else {
-                CD.setNeedUpdate("Y");
-            }
-
-            CD.setFixed(true);
-            CD.setAppNm(appNm[i]);
-            CD.setHybridYn(HybridYn[i]);
-            CD.setHybridUrl(SEARCHURL[i]);
-            CD.setDrawableIcon(drawable[i]);
-            CD.setEssentilaInstCd(essentialInstCd[i]);
-            CD.setEssentialYn(essentialYn[i]);
-            CD.setUnCheckedCount("");
-            CD.setPackageNm(packageNm[i]);
-            CD.setAppId(appId[i]);
-            if("게시판".equals(appNm[i])){
-                CD.setDrawableIcon2(R.drawable.icon_board2);
-                CD.setDrawableIcon3(R.drawable.icon_board3);
-            }else if("사내메일".equals(appNm[i])){
-                CD.setDrawableIcon2(R.drawable.icon_mail2);
-                CD.setDrawableIcon3(R.drawable.icon_mail3);
-            }else if("메모보고".equals(appNm[i])){
-                CD.setDrawableIcon2(R.drawable.icon_memo2);
-                CD.setDrawableIcon3(R.drawable.icon_memo3);
-            }else if("전자결재".equals(appNm[i])){
-                CD.setDrawableIcon2(R.drawable.icon_approve2);
-                CD.setDrawableIcon3(R.drawable.icon_approve3);
-            }else if("직원검색".equals(appNm[i])){
-                CD.setDrawableIcon2(R.drawable.icon_member2);
-                CD.setDrawableIcon3(R.drawable.icon_member3);
-            }else if("외출휴가".equals(appNm[i])){
-                CD.setDrawableIcon2(R.drawable.icon_break2);
-                CD.setDrawableIcon3(R.drawable.icon_break3);
-            }else if("감사정보".equals(appNm[i])){
-                CD.setDrawableIcon2(R.drawable.icon_inspection2);
-                CD.setDrawableIcon3(R.drawable.icon_inspection2);//해당 아이콘 없음 (감사정보)
-            }else if("재난관리앱".equals(appNm[i])){
-                CD.setDrawableIcon2(R.drawable.icon_disaster2);
-                CD.setDrawableIcon3(R.drawable.icon_disaster3);
-            }else if("국회업무".equals(appNm[i])){
-                CD.setDrawableIcon2(R.drawable.icon_assembly2);
-                CD.setDrawableIcon3(R.drawable.icon_assembly3);
-            }else if("법무정보".equals(appNm[i])){
-                CD.setDrawableIcon2(R.drawable.icon_law2);
-                CD.setDrawableIcon3(R.drawable.icon_law3);
-            }else if("스마트정비관리".equals(appNm[i])) {
-                CD.setDrawableIcon2(R.drawable.icon_repair2);
-                CD.setDrawableIcon3(R.drawable.icon_repair3);
-            }else if("exBus".equals(appNm[i])) {
-                CD.setDrawableIcon2(R.drawable.icon_bus2);
-                CD.setDrawableIcon3(R.drawable.icon_bus2);//해당 아이콘 없음 (exBus)
-            }else if("터널암판정(검측)".equals(appNm[i])) {
-                CD.setDrawableIcon2(R.drawable.icon_tunnel2);
-                CD.setDrawableIcon3(R.drawable.icon_tunnel2);//해당 아이콘 없음 (터널암판정(검측))
-            }else if("ex상황속보".equals(appNm[i])) {
-                CD.setDrawableIcon2(R.drawable.icon_exflash2);
-                CD.setDrawableIcon3(R.drawable.icon_exflash2);//해당 아이콘 없음 (ex상황속보)
-            }
-            SampleData.add(CD);
-            CopyData.add(CD);
-        }*/
-
     }
 
     public boolean netWorkStateCheck() {
@@ -1782,217 +1631,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
     }
 
-    public void start_vpn() {
-        ConnectivityManager manager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo mobile = manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        NetworkInfo wi_fi = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-
-        System.out.println("------------------------------------------------------vpn 1----------------------------");
-
-        //2021.07 vpn TEST
-        /*if (wi_fi.isConnected() || !mobile.isConnected() ) {
-
-            wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-            commonDialog1m = new CommonDialog(MainActivity.this, "", getString(R.string.wifi_network1), true,
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-
-                            Intent intent=new Intent(Settings.ACTION_WIRELESS_SETTINGS);
-
-                            startActivity(intent);
-
-                            Log.v(TAG, "Progressshowing");
-                            commonDialog1m.dismiss();
-                        }
-                    },
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            commonDialog1m.dismiss();
-                        }
-                    });
-            commonDialog1m.show();
-
-        }else if(!wi_fi.isConnected() && !mobile.isConnected()){
-            wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-            commonDialog1m = new CommonDialog(MainActivity.this, "", getString(R.string.wifi_network2), true,
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-
-                            Intent intent=new Intent(Settings.ACTION_WIRELESS_SETTINGS);
-                            startActivity(intent);
-
-                            Log.v(TAG, "Progressshowing");
-                            commonDialog1m.dismiss();
-                        }
-                    },
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            commonDialog1m.dismiss();
-                        }
-                    });
-            commonDialog1m.show();
-
-        }else{*/
-        ssmLib.setLoginStatus(LOGIN);
-        logmaking("START VPN", "");
-
-        if (vpnConn == null) {
-            logmaking("START VPN", "vpn instance is null!!!!");
-            vpnConn = SGVPNConnection.getInstance(tempService);
-        }
-        logmaking("IS CONNECTEd", "?");
-        connection();
-
-        logmaking("IS CONNECTEd", " Umm. Idon't Know well");
-        //}
-    }
-
-    private final int APP_PERMISSION_RETURN = 9133;
-    private final int VPN_SERVICE_PERMISSION_GROUP = 9130;
-    private final int VPN_SERVICE_PERMISSION_ALLOW = 9131;
-    private final int VPN_SERVICE_PERMISSION_DNEY = 9132;
-
     public static SGVPNConnection vpnConn;
     public static IBinder tempService = null;
-    private SgnServiceConnection mConnection = new SgnServiceConnection();
-    private class SgnServiceConnection implements ServiceConnection {
-
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.i("", "===================onServiceConnected===================");
-
-            tempService = service;
-
-            if (vpnConn == null)
-            {vpnConn = SGVPNConnection.getInstance(service);}
-
-            Log.i("", "Service Connected");
-            try {
-                PermissionCheck(PERMISSION_CHECK);
-            } catch (RemoteException e) {
-                Log.i("", "onServiceConnected permissionCheck exception " + e);
-                e.printStackTrace();
-            }
-            if (vpnConn.getStatus() == Constants.Status.Connection_N_Status.LEVEL_CONNECTED.ordinal()) {
-//                stringBuilder = new SpannableStringBuilder(getSharedString("USERNAME") + " - 업무망접속중");
-                stringBuilder = new SpannableStringBuilder(getSharedString("USERNAME") );
-                stringBuilder.setSpan(new ForegroundColorSpan(Color.parseColor("#8800ff")), getSharedString("USERNAME").length(),
-                        stringBuilder.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-                text_name.setText(stringBuilder);
-            }
-        }
-
-        public void onServiceDisconnected(ComponentName name) {
-            Log.i("SgnServiceConnection", "===================onServiceDisconnected===================");
-            System.out.println("Service Disconnected");
-            tempService = null;
-            if (cpd != null && cpd.isShowing()) {
-                progressState(false, "비정상종료", 99);
-                text_name.setText(getSharedString(getSharedString("USERNAME")));
-                mvpnstate = true;
-                Toast.makeText(MainActivity.this, getString(R.string.vpn_unusual_finish), Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(ClientUtil.SGVPN_API);
-                intent.setPackage(ClientUtil.SGN_PACKAGE);
-                if (!bindService(intent, mConnection, BIND_AUTO_CREATE)) {
-                    Log.i(TAG, "service bind error");
-                } else {
-                    try {
-                        startService(intent);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }//if else
-            }//if
-        }//onServiceDisconnected
-
-    }//SgnServiceConnection
-
-    public void PermissionCheck(int requestCode) throws RemoteException {
-        Log.i("", "PermissionCheck======== tempservice is " + vpnConn.getTempService());
-        /*MobileApi objAidl = MobileApi.Stub.asInterface(tempService);*/
-        Intent permissioncheck = vpnConn.getPermissionCheck();
-        if (permissioncheck == null) {
-            Log.i("", "permissionchek is null");
-            onActivityResult(requestCode, Activity.RESULT_OK, null);
-        } else {
-            Log.i("", "permissionchek is not null");
-            startActivityForResult(permissioncheck, requestCode);
-        }
-    }
-
-    public CommonDialog commonDialog1m;
-    public void connection() {
-        //     Toast.makeText(LoginActivity.this, encrypted.toString(), Toast.LENGTH_SHORT).show();
-        int status = vpnConn.getStatus();
-        logmaking("VPNConn.getStatus", vpnConn.getStatus());
-
-        if (CommonUtil.getMobileData(MainActivity.this) == TYPE_WIFI) {        // Wi-Fi 켜져 있을 경우
-            wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-            commonDialog1m = new CommonDialog(MainActivity.this, "", getString(R.string.wifi_network), true,
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            commonDialog1m.dismiss();
-                            wifi.setWifiEnabled(false);
-
-                            drawer.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    preConnection();
-                                }
-                            }, 2000);
-
-                            Log.v(TAG, "Progressshowing");
-                        }
-                    },
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            commonDialog1m.dismiss();
-                        }
-                    });
-            commonDialog1m.show();
-
-        } else {            //	Wi-Fi OFF LTE
-//                edit.putInt("Wi-Fi", 0);		//Wi-Fi 켜져있으면  1, 꺼져있으면 0 저장
-            if (status == Constants.Status.Connection_N_Status.LEVEL_CONNECTED.ordinal()) {
-            } else {
-                preConnection();
-            }
-        }
-    }
-
-    public void preConnection() {
-        Log.e(TAG, "=================버튼 클릭 이벤트================");
-        progressState(true, getString(R.string.vpn_wait_message), 99);
-        //cpd.show();
-
-        if(vpnStartFlag == true){
-            Log.e(TAG, "=================vpn 연결중..........");
-            if (!("").equals(getSharedString("USERID")) && !("").equals(getSharedString("USERPWD"))) {
-                Log.e(TAG, getSharedString("USERPWD"));
-                vpnConn.connection(getSharedString("USERID"), getSharedString("USERPWD"));
-            }
-            //vpnConn.connection("test01", "test01");
-        }
-    }
-
-    // Package 설치여부 확인
-    private void prepareStartProfile(int requestCode) throws RemoteException {
-
-        Intent requestpermission = vpnConn.getService();
-        Log.i(TAG("에스지엔 PERMISSION"), "requestpermission : " + requestpermission);
-        if (requestpermission == null) {
-            Log.i(TAG("에스지엔 PERMISSION"), "==========requestpermission is null");
-            onActivityResult(requestCode, Activity.RESULT_OK, null);
-        } else {
-            Log.i(TAG("에스지엔 PERMISSION"), "==========requestpermission is not  null");
-            startActivityForResult(requestpermission, requestCode);
-        }
-    }
 
     private List<AppdataList> downLoadableAppList = new ArrayList<>();
     public void getDownloadableApp() {
@@ -2165,39 +1805,29 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     public void destroyConnection() {
         try {
+           /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Intent intent = new Intent(MainActivity.this, AppStateService.class);
+                stopService(intent);
+            } else {
+                Intent intent = new Intent(MainActivity.this, AppStateService.class);
+                stopService(intent);
+            }*/
+            Log.e(TAG, "service bind unbindService");
             unbindService(mConnection);
         } catch (Exception e) {
             Log.e(TAG, "onDestroy Exception : " + e);
         }
 
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                Intent intent = new Intent(MainActivity.this, AppStateService.class);
-                stopService(intent);
-            } else {
-                Intent intent = new Intent(MainActivity.this, AppStateService.class);
-                stopService(intent);
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "onDestroy Exception : " + e);
-        }
-
-        try {
             if (mVpnReceiver != null) {
-                {   unregisterReceiver(mVpnReceiver);  }
-
+                unregisterReceiver(mVpnReceiver);
                 vpnConn.disconnection();
                 ssmLib.setLoginStatus(LOGOUT);
-                if (mVpnReceiver != null) {
-                    unregisterReceiver(mVpnReceiver);
-                }
-            }
-            if (cpd != null) {
-                progressState(false, "비정상종료", 99);
             }
         } catch (Exception e) {
         }
     }
+
 
     @Override
     protected void onDestroy() {
@@ -2207,7 +1837,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         if (vpnConn != null) {
             Log.e(TAG, "vpnConn is Activating");
-            vpnConn.getInstance(tempService);
             vpnConn.disconnection();
             vpnConn = null;
         } else {
@@ -2222,17 +1851,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         } catch (Exception e) {
         }
         try {
-            unbindService(mConnection);
-        } catch (Exception e) {
-        }
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 Intent intent = new Intent(MainActivity.this, AppStateService.class);
                 stopService(intent);
             } else {
                 Intent intent = new Intent(MainActivity.this, AppStateService.class);
                 stopService(intent);
-            }
+            }*/
+
+            Log.e(TAG, "service bind unbindService");
+            unbindService(mConnection);
         } catch (Exception e) {
         }
     }
@@ -2341,17 +1969,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             final AppdataList list = appdataLists.get(position);
             Log.d(TAG, "[EJY] onBindViewHolder() - VPN -> list :: "+list.getAppNm()+"/ "+list.getAppVer()+" / "+list.getUnCheckedCount());
 
-            //new DownloadImageTask(holder.appicon).execute(appdataLists.get(i).getIconUrl());
-            /*if (list.getDrawableicon() == 0) {
-                try {
-                    holder.appicon.setImageDrawable(context.getPackageManager().getApplicationIcon(list.getPackageNm()));
-
-                } catch (Exception e) {
-                }
-            } else {
-                holder.appicon.setImageResource(list.getDrawableicon());
-            }*/
-
             holder.appicon.setImageResource(list.getDrawableicon2());
             holder.appicon_name.setText(list.getAppNm());
 
@@ -2442,19 +2059,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                             try {
 
                                 if (list.getEssentialYn().equals("Y")) {
-                                    Log.d(TAG, "[EJY] onBindViewHolder() - VPN 접속여부 CASE : YES ");
-                                    //VPN RECEIVER가 등록돼있지 않다면 진입
-                                    if (mVpnReceiver == null) {
-                                        IntentFilter intentFilter = new IntentFilter(ClientUtil.SGVPN_STATUS);
-                                        registerReceiver(mVpnReceiver, intentFilter);
-                                    }
-
+                                    Log.d(TAG, "[EJY] onBindViewHolder() - VPN 접속여부 CASE : YES :: " +vpnConn.getStatus());
                                     //VPNCONNECTION STATUS가 접속상태 ?  VPN 접속 : 앱실행
                                     if (vpnConn.getStatus() != Constants.Status.Connection_N_Status.LEVEL_CONNECTED.ordinal()) {
-                                        VPNpackageName = list.getPackageNm();
-                                        VPNHybridURL = list.getHybridUrl();
-                                        start_vpn();
-
+                                        disconn_vpn();
                                     } else if (vpnConn.getStatus() == Constants.Status.Connection_N_Status.LEVEL_CONNECTED.ordinal()) {
                                         //기존 FIXED APP  에대해서는 하드코딩돼있음
                                         if (list.getAppNm().equals("외출휴가")) {
@@ -2777,406 +2385,29 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(vpnStartFlag == true){
-                progressState(true, "", 0);
-                int value = intent.getIntExtra("STATUS", 0);
-                Log.i(TAG, "==========SGVPNBroadcastReceiver========== getAction ============" + intent.getAction() + "[VALUE] : "
-                        + value +
-                        "-" + intent.getStringExtra("DETAILSTATUS"));
-
-                if (intent.getAction().equals("com.sgvpn.vpnservice.STATUS")) {
-                    int service_status = intent.getIntExtra("STATUS", 0);
-
-                    if (vpnConn.getStatus() == Constants.Status.Connection_N_Status.LEVEL_CONNECTED.ordinal()) {
-                        Log.e(TAG, "[STATUS at BR]-[ status : " + vpnConn.getStatus() + " ]");
-
-                        progressState(false, intent.getStringExtra("DETAILSTATUS"), intent.getIntExtra("STATUS", 0));
-//                    stringBuilder = new SpannableStringBuilder(getSharedString("USERNAME") + " - 업무망접속중");
-                        stringBuilder = new SpannableStringBuilder(getSharedString("USERNAME"));
-                        stringBuilder.setSpan(new ForegroundColorSpan(Color.parseColor("#8800ff")), getSharedString("USERNAME").length(),
-                                stringBuilder.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-
-                    } else {
-                        progressState(false, intent.getStringExtra("DETAILSTATUS"), vpnConn.getStatus());
-                    }
-                }
-            }else{
-                Log.e(TAG, "메인 접속 하자마자 vpn 연결중....... : " +vpnConn.getStatus());
-                if(vpnConn.getStatus() == Constants.Status.Connection_N_Status.LEVEL_CONNECTED.ordinal()){
-                    if (cpd != null) {
-                        cpd.dismiss();
-                        cpd = null;
-                    }
-                }
-
-
-            }
-        }
-
-
-    };
-
-
-    public void progressState(final boolean visible, final String vpnState, final int vpnCode) {
-        Log.d(TAG, "[EJY] progressState() - visible : "+visible);
-        Log.d(TAG, "[EJY] progressState() - vpnState : "+vpnState);
-        Log.d(TAG, "[EJY] progressState() - vpnCode : "+vpnCode);
-        final int vpnStateCode = vpnCode;
-
-        drawer.post(new Runnable() {
-            @Override
-            public void run() {
-                if (cpd == null & vpnCode != Constants.Status.Connection_N_Status.LEVEL_DISCONNECTED_DONE.ordinal()) {
-                    cpd = new CustomprogressDialog(MainActivity.this, null);
-                    cpd.setCancelable(false);
-                    cpd.setContent(vpnState);
-                    if ((commonDialog_oneButton != null && commonDialog_oneButton.isShowing())) {
-                        commonDialog_oneButton.dismiss();
-                        commonDialog_oneButton = null;
-                    } else if (commonDialog != null && commonDialog.isShowing()) {
-                        commonDialog.dismiss();
-                        commonDialog = null;
-                    }
-                    try {
-                        try {
-                            cpd.show();
-                        } catch (Exception e) {
-                        }
-                        counter = 0;
-                        ConnectionTimmerTask = new TimerTask() {
+            Log.e(TAG, "메인 접속 하자마자 vpn 연결중....... : " +vpnConn.getStatus());
+            if(vpnConn.getStatus() == Constants.Status.Connection_N_Status.LEVEL_CONNECTED.ordinal()){
+                disCpd();
+            } else if (vpnConn.getStatus() == Constants.Status.Connection_N_Status.LEVEL_DUP_LOGIN.ordinal()){
+                Log.e(TAG, "중복 로그인 vpn 연결중....... : " +vpnConn.getStatus());
+                commonDialog_oneButton = new CommonDialog_oneButton(MainActivity.this, "중복로그인", "사용자 중복로그인이 발생하였습니다.\n로그아웃을 이후 재접속 하시기 바랍니다." , false,
+                        new View.OnClickListener() {
                             @Override
-                            public void run() {
-                                Log.e(TAG, "ConnectionTimeCount : " + String.valueOf(counter));
+                            public void onClick(View view) {
+                                commonDialog_oneButton.dismiss();
+                                commonDialog_oneButton = null;
+                                vpnConn.disconnection();
 
-                                if (counter == CONNECTIONTIME) {
-                                }
-                                if (vpnConn == null) {
-                                    Toast.makeText(MainActivity.this, "접속제한 시간을 초과하였습니다. \n로그아웃 이후 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
-                                }
-                                if (vpnConn.getStatus() == Constants.Status.Connection_N_Status.LEVEL_CONNECTED.ordinal()) {
-                                    if (cpd != null) {
-                                        Log.e(TAG, "ConnectionTimeCount 33333");
-                                        cpd.dismiss();
-                                        cpd = null;
-                                        timer.cancel();
-                                        timer.purge();
-                                        ConnectionTimmerTask.cancel();
-                                    }
-                                    /*Intent intent = new Intent(MainActivity.this, AppStateService.class);
-                                    Log.e(TAG, "======접속은 성공하였으나 업무 찾지를 못합");
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                        intent.putExtra("start", "start");
-                                        startService(intent);
-                                        Log.e(TAG, "STARTFOREGROUNDSERVICE");
-                                    } else {
-                                        startService(intent);
-                                    }*/
+                                ssmLib = SSMLib.getInstance(MainActivity.this);
+                                ssmLib.setLoginStatus(LOGOUT);
 
-                                } else {
-                                    Log.e(TAG, "===========vpnConn.disconnection()");
-                                /*vpnConn.disconnection();
-                                try {
-                                    commonDialog_oneButton = new CommonDialog_oneButton(MainActivity.this,
-                                            getString(R.string.connectingFailed), getString(R.string.connectionTimeExcess), true,
-                                            new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View view) {
-                                                    commonDialog_oneButton.dismiss();
-                                                    destroyConnection();
-                                                    onResume();
-                                                }
-                                            });
-                                    commonDialog_oneButton.show();
-                                } catch (Exception e) {
-                                    Log.e(TAG, "ConnectionTimeCount 444444");
-                                }*/
-                                }
-                                counter++;
-                            }
-                        };
-                        timer = new Timer();
-                        timer.schedule(ConnectionTimmerTask, 0, 1000);
-                    } catch (Exception e) {
-                    }
-                }
-
-                if (visible) {
-                    //do Nothing
-                } else {
-                    if (vpnCode == 99) {
-                        if (cpd != null) {
-                            cpd.dismiss();
-                            cpd = null;
-                            timer.cancel();
-                            timer.purge();
-                            ConnectionTimmerTask.cancel();
-                        }
-                    }
-
-                    if ((vpnStateCode == Constants.Status.Connection_N_Status.LEVEL_CONNECTED.ordinal() && vpnConn.getStatus() == Constants.Status.Connection_N_Status.LEVEL_CONNECTED.ordinal())) {
-                        Log.e(TAG, "[STATUS at THREAD INVISIBLE ]-[ status : " + vpnConn.getStatus() + " ]");
-
-                        if (stringBuilder != null) {
-                            text_name.setText(stringBuilder);
-                        }
-
-                        text_name.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (cpd != null) {
-                                    cpd.dismiss();
-                                    cpd = null;
-                                    timer.cancel();
-                                    timer.purge();
-                                    ConnectionTimmerTask.cancel();
-                                }
-                                Log.e(TAG, "[STATUS at THREAD INVISIBLE ]-[ status : " + vpnConn.getStatus() + "  ] \nCONGRAT! VPN IS CONNECTED");
-                                Log.d("VPNPACKAGENAME", "VPNPACKAGENAME = " + VPNpackageName);
-                                if (VPNpackageName.equals(EASYAP_PKGNM)) {
-
-                                    Intent i = new Intent(MainActivity.this, ApprovalMainActivity.class);
-                                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                    startActivity(i);
-
-                                } else if (VPNpackageName.equals(BOARD_PKGNM)) {
-                                    Intent i = new Intent(MainActivity.this, BoardListActivity.class);
-                                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                    startActivity(i);
-                                } else if (VPNpackageName.equals(MAIL_PKGNM)) {
-                                    Intent i = new Intent(MainActivity.this, EmailMainActivity.class);
-                                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                    startActivity(i);
-                                } else if (VPNpackageName.equals(ELEC_PKGNM) || VPNpackageName.equals("전자결재")) {
-                                    Intent intent = new Intent(MainActivity.this, ElecMemoAppWebViewActivity.class);
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                    intent.putExtra("app", "E");
-                                    intent.putExtra("hybridUrl", ELEC_URL);
-                                    MainActivity.this.startActivity(intent);
-                                } else if (VPNpackageName.equals(MEMO_PKGNM) || VPNpackageName.equals("메모보고")) {
-                                    Intent intent = new Intent(MainActivity.this, ElecMemoAppWebViewActivity.class);
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                    intent.putExtra("hybridUrl", MEMO_URL);
-                                    intent.putExtra("app", "M");
-                                    MainActivity.this.startActivity(intent);
-                                } else if (VPNpackageName.equals(SEARCHMAN_PKGNM)) {
-                                    Intent i = new Intent(MainActivity.this, WebViewActivity.class);
-                                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                    i.putExtra("hybridUrl", searchURL + getSharedString("USERDEPARTURECODE"));
-                                    Log.v("hybridSelect", "   :::    " + VPNHybridURL);
-                                    startActivity(i);
-                                } else {
-
-                                    Log.v("packageName", ":::: 3 " + VPNpackageName);
-                                    try {
-                                        Intent i = new Intent(VPNpackageName.toString() + ".LAUNCH_MAIN");
-                                        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                        i.putExtra("userId", getSharedString("USERID"));
-                                        startActivity(i);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                                Intent intent = new Intent(MainActivity.this, AppStateService.class);
-
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                    intent.putExtra("start", "start");
-                                    startService(intent);
-                                    Log.e("MainActivity ---", "STARTFOREGROUNDSERVICE");
-                                } else {
-                                    startService(intent);
-                                }
+                                finish();
                             }
                         });
-                    } else {
-                        if (vpnConn != null) {
-                            {
-                                Log.e(TAG, "[STATUS at THREAD INVISIBLE ]-[ status : " + vpnConn.getStatus() + " ]");
-                                text_name.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-
-                                        Log.i(TAG, "static progressDialog is showing");
-                                        // Log.e(TAG, "=====[VPN_STATE] : [" + vpnStateCode + "] === [VPNCONN_STATE] : [" + vpnConn.getStatus() + "]=====");
-
-                                        if (commonDialog_oneButton == null
-                                                /*&& vpnStateCode == Constants.Status.Connection_N_Status.LEVEL_DUP_LOGIN.ordinal()*/
-                                                && vpnConn.getStatus() == Constants.Status.Connection_N_Status.LEVEL_DUP_LOGIN.ordinal()) {
-                                            //중복 로그인 상황일때의 브로드캐스트 리시버 다이얼로그
-                                            //[STATEMESSAGE  : LEVERL_DUP_LOGIN ] [STATECODE  :  6]
-                                            if (cpd != null) {
-                                                cpd.dismiss();
-                                                cpd = null;
-                                                timer.cancel();
-                                                timer.purge();
-                                                ConnectionTimmerTask.cancel();
-                                            }
-
-                                            commonDialog_oneButton = new CommonDialog_oneButton(MainActivity.this, getString(R.string.connectingFailed), vpnState, false,
-                                                    new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View view) {
-                                                            commonDialog_oneButton.dismiss();
-                                                            commonDialog_oneButton = null;
-                                                            vpnConn.disconnection();
-
-                                                            ssmLib = SSMLib.getInstance(MainActivity.this);
-                                                            ssmLib.setLoginStatus(LOGOUT);
-                                                        }
-                                                    });
-                                            commonDialog_oneButton.show();
-
-                                        } else if (commonDialog_oneButton == null
-                                                && vpnStateCode == Constants.Status.Connection_N_Status.LEVEL_AUTH_FAILED.ordinal()
-                                                && vpnConn.getStatus() == Constants.Status.Connection_N_Status.LEVEL_AUTH_FAILED.ordinal()) {
-                                            //    인증정보 실패했을때
-                                            //    [ STATEMESSAGE   :  LEVEL_AUTH_FAILED ]  [STATECODE  :  3 ]
-
-                                            if (cpd != null) {
-                                                cpd.dismiss();
-                                                cpd = null;
-                                                timer.cancel();
-                                                timer.purge();
-                                                ConnectionTimmerTask.cancel();
-                                            }
-
-                                            commonDialog_oneButton = new CommonDialog_oneButton(MainActivity.this, getString(R.string.authenticationFailed), vpnState, false,
-                                                    new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View view) {
-                                                            commonDialog_oneButton.dismiss();
-                                                            commonDialog_oneButton = null;
-                                                        }
-                                                    });
-                                            commonDialog_oneButton.show();
-
-                                        } else if (commonDialog_oneButton == null
-                                                && vpnStateCode == Constants.Status.Connection_N_Status.LEVEL_CRITICAL_ITEMS_NOT_FOUNTD.ordinal()
-                                                && vpnConn.getStatus() == Constants.Status.Connection_N_Status.LEVEL_CRITICAL_ITEMS_NOT_FOUNTD.ordinal()) {
-                                            //PARAMETER 값이 부족할때
-                                            //[STATEMESSAGE  :  LEVEL_CRITICAL_ITEMS_NOT_FOUND]   [STATECODE  :  ]
-
-                                        } else if (commonDialog_oneButton == null
-                                                && vpnStateCode == Constants.Status.Connection_N_Status.LEVEL_CONNECTING.ordinal()
-                                                && vpnConn.getStatus() == Constants.Status.Connection_N_Status.LEVEL_CONNECTING.ordinal()) {
-
-                                        } else if (commonDialog_oneButton == null
-                                                && vpnStateCode == Constants.Status.Connection_N_Status.LEVEL_NOLEVEL.ordinal()
-                                                && vpnConn.getStatus() == Constants.Status.Connection_N_Status.LEVEL_NOLEVEL.ordinal()) {
-
-                                            if (cpd != null) {
-                                                cpd.dismiss();
-                                                cpd = null;
-                                                timer.cancel();
-                                                timer.purge();
-                                                ConnectionTimmerTask.cancel();
-                                            }
-
-                                            commonDialog_oneButton = new CommonDialog_oneButton(MainActivity.this, getString(R.string.connectionFailed), vpnState, false,
-                                                    new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View view) {
-                                                            commonDialog_oneButton.dismiss();
-                                                            commonDialog_oneButton = null;
-                                                        }
-                                                    });
-                                            commonDialog_oneButton.show();
-
-                                            //   네트워크 감지 불가일때의 브로드캐스트 리시버 다이얼로그 [ STATEMESSAGE   :  LEVEL_NONETWORK ]  [STATECODE  :  7 ]
-                                        } else if (commonDialog_oneButton == null
-                                                && vpnStateCode == Constants.Status.Connection_N_Status.LEVEL_NONETWORK.ordinal()
-                                                && vpnConn.getStatus() == Constants.Status.Connection_N_Status.LEVEL_NONETWORK.ordinal()){
-
-                                            if (cpd != null) {
-                                                cpd.dismiss();
-                                                cpd = null;
-                                                timer.cancel();
-                                                timer.purge();
-                                                ConnectionTimmerTask.cancel();
-                                            }
-
-                                            commonDialog_oneButton = new CommonDialog_oneButton(MainActivity.this, getString(R.string.networkTransition_title), getString(R.string.networkTransition_text), false,
-                                                    new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View view) {
-                                                            commonDialog_oneButton.dismiss();
-                                                            commonDialog_oneButton = null;
-                                                            ssmLib.setLoginStatus(LOGOUT);
-                                                            vpnConn.disconnection();
-                                                            //vpnConn=null;
-
-                                                            ssmLib = SSMLib.getInstance(MainActivity.this);
-                                                            ssmLib.setLoginStatus(LOGOUT);
-                                                            drawer.postDelayed(new Runnable() {
-                                                                @Override
-                                                                public void run() {
-                                                                    if(netWorkStateCheck()){
-                                                                        start_vpn();}
-                                                                }
-                                                            }, 1500);
-                                                        }
-                                                    });
-                                            commonDialog_oneButton.show();
-
-                                        } else if (commonDialog_oneButton == null
-                                                && vpnStateCode == Constants.Status.Connection_N_Status.LEVEL_DISCONNECTED_DONE.ordinal()
-                                                && vpnConn.getStatus() == Constants.Status.Connection_N_Status.LEVEL_DISCONNECTED_DONE.ordinal()
-                                                && contextMain != null){
-                                            //   네트워크 감지 불가일때의 브로드캐스트 리시버 다이얼로그
-                                            //   [ STATEMESSAGE   :  LEVEL_NONETWORK ]  [STATECODE  :  7 ]
-
-                                            if (cpd != null) {
-                                                cpd.dismiss();
-                                                cpd = null;
-                                                timer.cancel();
-                                                timer.purge();
-                                                ConnectionTimmerTask.cancel();
-                                            }
-
-                                            commonDialog_oneButton = new CommonDialog_oneButton(MainActivity.this, getString(R.string.connectingFail_title), getString(R.string.connectingFail_text), false,
-                                                    new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View view) {
-                                                            commonDialog_oneButton.dismiss();
-                                                            commonDialog_oneButton = null;
-                                                            ssmLib.setLoginStatus(LOGOUT);
-                                                            mvpnstate = false;
-                                                            vpnConn.disconnection();
-                                                            vpnConn.disconnection();
-                                                            destroyConnection();
-                                                            onResume();
-                                                        }
-                                                    });
-
-                                            try {
-                                                commonDialog_oneButton.show();
-                                            } catch (Exception e) {
-                                            }
-
-                                        } else {
-                                            Log.e(TAG, String.valueOf(vpnConn.getStatus()));
-                                            if (vpnConn.getStatus() == Constants.Status.Connection_N_Status.LEVEL_CONNECTED.ordinal()) {
-                                                if (cpd != null) {
-                                                    cpd.dismiss();
-                                                    cpd = null;
-                                                    timer.cancel();
-                                                    timer.purge();
-                                                    ConnectionTimmerTask.cancel();
-                                                }
-                                            }
-                                        }
-
-                                    }
-                                }, 0);
-                            }
-                        }
-                    }
-
-                }
+                commonDialog_oneButton.show();
             }
-        });
-
-
-    }
+        }
+    };
 
     /*█                                                                                                                                                                                                  █*/
     /*█                                                                                                                                                                                                  █*/
@@ -3209,21 +2440,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     /*▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀*/
 
 
-    //2021-03-31 [EJY] VPN 연결 끊기 메소드 생성
-    public void disVpnConn() {
-        ssmLib.setLoginStatus(LOGOUT);
-        mvpnstate = false;
-        vpnConn.disconnection();
-        destroyConnection();
 
-        if(commonDialog != null) {
-            commonDialog.dismiss();
-        }
-
-//        setSharedString("LOGINSTATE", "LOGOUT");
-//        finish();
-
-    }
 
 
     //2021-04-21 [EJY] 메모보고 공지사항 메인페이지에서 표출
