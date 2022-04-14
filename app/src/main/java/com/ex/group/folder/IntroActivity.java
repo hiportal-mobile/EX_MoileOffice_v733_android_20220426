@@ -666,12 +666,12 @@ public class IntroActivity extends BaseActivity {
         LogMaker.logEnd();
 
 
-        /*boolean resultPermission = false;
-        resultPermission = permissionCheck();
+        //boolean resultPermission = false;
+        //resultPermission = permissionCheck();
 
-        if (resultPermission == true) {
+        //if (resultPermission == true) {
             checkPhoneState();
-        }*/
+        //}
 
         Log.d(TAG, "[EJY] keepCreate() - END ");
     }
@@ -1371,7 +1371,7 @@ public class IntroActivity extends BaseActivity {
                     setSharedString("FIRSTRUN", "Y");
                 }*/
                 authChk();
-                checkPhoneState();
+                //checkPhoneState();
                 return true;
             }
         } else {
@@ -1394,7 +1394,7 @@ public class IntroActivity extends BaseActivity {
                 if (new CommonUtil().hasAllPermissionGranted(grantResults)) {
                     Log.v(TAG, "=\n\n=======================onRequestPermissionResult 권한 허용 완료=======================");
                     authChk();
-                    checkPhoneState();
+                    //checkPhoneState();
                 } else {
                     Toast.makeText(IntroActivity.this, R.string.permission_grant, Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(Uri.parse("package:+" + getApplicationContext().getPackageName()));
