@@ -697,6 +697,9 @@ public class IntroActivity extends BaseActivity {
                     keepCreate();
 
                 } else {   ///하지만 정보가 일치 하지 않으면 바로 다이얼로그 띄워서 설치 유도를 한다.
+                    vpnConn.disconnection();
+                    destroyConnection();
+
                     Log.e(TAG, "FAIL_version_current : " + getVersion());
                     Log.e(TAG, "FAIL_version_new     : " + curVersion);
                     commonDialog_oneButton = new CommonDialog_oneButton(IntroActivity.this, getString(R.string.request_launcher_update_title),
