@@ -1,15 +1,26 @@
 package com.ex.group.approval.easy.activity;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,21 +34,25 @@ import com.ex.group.approval.easy.primitive.DraftFormPrimitive;
 import com.ex.group.approval.easy.primitive.DraftPrimitive;
 import com.ex.group.approval.easy.util.ActivityLauncher;
 import com.ex.group.approval.easy.widget.CodeSpinner;
+import com.ex.group.mail.data.EmailFileListData;
 import com.skt.pe.common.activity.ifaces.CommonUI;
 import com.skt.pe.common.conf.Environ;
 import com.skt.pe.common.conf.EnvironManager;
 import com.skt.pe.common.data.AuthData;
 import com.skt.pe.common.data.SKTUtil;
+import com.skt.pe.common.dialog.SKTDialog;
 import com.skt.pe.common.exception.SKTException;
 import com.skt.pe.common.primitive.Primitive;
 import com.skt.pe.common.primitive.util.PrimitiveList;
 import com.skt.pe.common.service.Parameters;
 import com.skt.pe.common.widget.MemberEditText;
+import com.skt.pe.util.StringUtil;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -57,6 +72,10 @@ public class ApplyOutsideApprovalActivity extends ApprovalCommonActivity impleme
     private final static String activityTitle = "외출신청서";
 
     private CodeSpinner csFormCode;
+
+    // kbr 2022.04.18
+    private final int UPLOAD_FILE = 1006;
+    private ArrayList<EmailFileListData> uploadList = new ArrayList<EmailFileListData>();
 
 
     // 2015-06-26 Join 추가 - 필요 시 아래 구문 추가
@@ -146,18 +165,54 @@ public class ApplyOutsideApprovalActivity extends ApprovalCommonActivity impleme
             params.put("S_OUTNG_PLACE", draftPrim.getLocation());
             params.put("S_PROC_CLASS", "");
 
+            // kbr 2022.04.22 - 파일이 있을 경우
+            if (uploadList.size() > 0) {
+                params.put("S_FILE_INFO", uploadList.get(0).getM_szContent());  // 파일명 (절대 경로)
+            }
+
+            /*
+            * kbr 2022.04.20
+            * params에다가 multipart를 추가해야한다.
+            * */
+
 
 //			params.put("S_EMP_ID", "19805014");//박재흥차장님 아이디(김지훈 대리님 자녀가 없어 테스트 용도로 사용)
             Environ environ = EnvironManager.getEnviron(ApplyOutsideApprovalActivity.this);
             String url = environ.getProtocol() + "://" + environ.getHost() + ":" + environ.getPort() + environ.FILE_ATTACHMENT + "?" + params.toString() + "&" + environ.getEnvironParam();
             draftPrim.setUrl(url);
-
+            /*
+                http://128.200.121.68:9000/emp_ex/service.pe?
+                primitive=COMMON_APPROVALSTAGING_RESTFULCLIENTSSL
+                S_OUTNG_END_HM=2100
+                S_ATTEND_CD=22100
+                S_COMP_EMP_ID=
+                S_OUTNG_STA_HM=1800
+                S_APP_URL=%2FsearchOutCheck
+                S_EMP_ID=99999999
+                S_OUTNG_PLACE=test1
+                S_OUTNG_YMD=20220419
+                S_OUTNG_HOUR_CHILD_PER_NO=
+                S_ATTEND_APPL_YMD=20220419
+                S_API_URL=%2FsearchOutCheck
+                S_NOTE=test1
+                S_PROC_CLASS=
+                mdn=01073939080
+                appId=null
+                appVer=5.2.3
+                lang=ko
+                groupCd=EX
+            */
             //2021.07 1급자가결재(외출)
             System.out.println("---------------------------POST_NM : " + POST_NM);
             String postNm = POST_NM.replaceAll("급", "");
             draftPrim.setPOST_NM(postNm);
 
-            new JsonAction(COMMON_SEARCHOUTCHECK, url, this).execute();
+            if (url.contains("S_FILE_INFO")) { // 파일이 있을 경우
+                new JsonAction(COMMON_SEARCHOUTCHECK, url, this, params.get("S_FILE_INFO")).execute();
+            } else {    // 파일이 없을 경우
+                new JsonAction(COMMON_SEARCHOUTCHECK, url, this).execute();
+            }
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -233,7 +288,7 @@ public class ApplyOutsideApprovalActivity extends ApprovalCommonActivity impleme
                 Log.d("onJsonActionPost", " result = 2");
                 initUI();
                 Log.d("onJsonActionPost", " result = 3");
-            } else {
+            } else {    // 결재 올리기는 여기
                 if (primitive.equals(COMMON_SEARCHOUTCHECK)) {
                     JSONObject obj = new JSONObject(result);
                     JSONArray jsonArray = obj.getJSONArray("Etc");
@@ -331,6 +386,59 @@ public class ApplyOutsideApprovalActivity extends ApprovalCommonActivity impleme
         super.onReceive(primitive, e);
     }
 
+    // kbr 2022.04.18
+    private void setUploadUI() {
+        if (uploadList != null && uploadList.size() > 0) {
+            findViewById(R.id.upload_fileLayout).setVisibility(View.VISIBLE);
+            final LinearLayout layout = (LinearLayout) findViewById(R.id.upload_FILEATTLIST);
+            layout.removeAllViews();
+            for (int i = 0; i < uploadList.size(); i++) {
+                LinearLayout tempLayout = (LinearLayout) LayoutInflater.from(
+                        this).inflate(R.layout.mail_file_upload_list_item, null);
+                final Button fileCheckBtn = (Button) tempLayout
+                        .findViewById(R.id.FILE_CHECK_BUTTON);
+                if (uploadList.get(i).getM_szIsEcm().equals("true")) {
+                    fileCheckBtn.setBackground(getResources().getDrawable(R.drawable.mail_check_on));
+                } else {
+                    fileCheckBtn.setBackground(getResources().getDrawable(R.drawable.mail_check_off));
+                }
+                final int fileIndex = i;
+                fileCheckBtn.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View arg0) {
+                        if (uploadList.get(fileIndex).getM_szIsEcm()
+                                .equals("true")) {
+                            uploadList.remove(fileIndex);
+                            setUploadUI();
+
+                        } else {
+                            uploadList.get(fileIndex).setM_szIsEcm("true");
+                            fileCheckBtn.setBackground(getResources().getDrawable(R.drawable.mail_check_on));
+                        }
+                    }
+                });
+                TextView txtFileName = (TextView) tempLayout
+                        .findViewById(R.id.FILE_NAME);
+                txtFileName.setText(uploadList.get(i).getM_szName());
+                layout.addView(tempLayout);
+            }
+        } else {
+            findViewById(R.id.upload_fileLayout).setVisibility(View.GONE);
+        }
+    }
+
+    private String[] getRealFilePath(Uri uriPath) {
+
+        Cursor cursor = getContentResolver().query(uriPath, null, null, null, null);
+        int index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+        cursor.moveToFirst();
+
+        String fullPath = cursor.getString(index); // 파일의 실제 경로
+        String fileName = fullPath.substring(fullPath.lastIndexOf("/") + 1);
+
+        return new String[] { fullPath, fileName };
+    }
 
     @Override
     protected void onActivityResultX(int requestCode, int resultCode, Intent intent) {
@@ -373,6 +481,80 @@ public class ApplyOutsideApprovalActivity extends ApprovalCommonActivity impleme
                 tvCooperator.setText(tvCooperator.toString());
 //				tvCooperator.setText(tvCooperator.toShortString());
             }
+        /*
+        * kbr 2022.04.18
+        * 파일 선택
+        * */
+        } else if (requestCode == UPLOAD_FILE && resultCode == RESULT_OK) {
+            if (intent.getClipData() == null) {     // 1개
+                Log.d(TAG, " - onActivityResultX : single choice");
+                Uri fileUri = intent.getData();
+                if (StringUtil.isNull(fileUri.getPath())) {
+                    return;
+                }
+                String[] file = getRealFilePath(fileUri); // {파일 실제 경로, 파일 이름}
+                for (int a = 0; a < uploadList.size(); a++) {
+                    String uploadPath = uploadList.get(a).getM_szContent(); // getM_szContent() : 파일 실제 경로(이름 포함)
+                    if (file[0].equals(uploadPath)) {
+                        Toast.makeText(this, "동일 파일이 이미 있습니다.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+                EmailFileListData filelist = new EmailFileListData();
+                filelist.setM_szName(file[1]);
+                filelist.setM_szContent(file[0]);
+                filelist.setM_szIsEcm("true");
+
+                uploadList.add(filelist);
+            } else {    // 2개 이상
+                Log.d(TAG, " - onActivityResultX : multiple choice");
+                ClipData clipData = intent.getClipData();
+
+                if (clipData.getItemCount() + uploadList.size() > 20) {
+                    Toast.makeText(this, "파일 첨부는 1개만 가능합니다.", Toast.LENGTH_SHORT).show();
+                    return;
+                } else {
+                    Uri fileUri = null;
+                    String[] file = null;
+                    int dupNum = 0;
+                    boolean dupChk;
+                    for (int a = 0; a < clipData.getItemCount(); a++) {
+                        dupChk = false;
+                        fileUri = clipData.getItemAt(a).getUri();
+                        if (StringUtil.isNull(fileUri.getPath())) {
+                            continue;
+                        }
+                        file = getRealFilePath(fileUri); // {파일 실제 경로, 파일 이름}
+                        Log.d("EmailWriteActivity", " - " + dupNum + " file path : " + file[0]);
+                        Log.d("EmailWriteActivity", " - " + dupNum + " file name : " + file[1]);
+                        for (int b = 0; b < uploadList.size(); b++) {
+                            String uploadPath = uploadList.get(b).getM_szContent(); // getM_szContent() : 파일 실제 경로(이름 포함)
+                            if (file[0].equals(uploadPath)) {
+                                ++dupNum;
+                                dupChk = true;
+                                break;
+                            }
+                        }
+                        if (!dupChk) {
+                            EmailFileListData filelist = new EmailFileListData();
+                            filelist.setM_szName(file[1]);
+                            filelist.setM_szContent(file[0]);
+                            filelist.setM_szIsEcm("true");
+
+                            Log.d("EmailWriteActivity", " - " + dupNum + " file list content : " + filelist.getM_szContent());
+                            Log.d("EmailWriteActivity", " - " + dupNum + " file list name : " + filelist.getM_szName());
+                            Log.d("EmailWriteActivity", " - " + dupNum + " file list isecm : " + filelist.getM_szIsEcm());
+
+                            uploadList.add(filelist);
+                        }
+                    }
+                    if (dupNum > 0) {
+                        Toast.makeText(this, "첨부 파일과 동일한 파일이 " + dupNum + "개 있습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+            setUploadUI();
+            Log.d("EmailWriteActivity", " - uploadList : " + uploadList.toString());
         }
     }
 
@@ -520,6 +702,11 @@ public class ApplyOutsideApprovalActivity extends ApprovalCommonActivity impleme
                 String message = validationUI();
                 if (message == null) {
                     Log.e("테스트123", "345345");
+
+                    /*
+                     * kbr 2022.04.19
+                     * 이 위치가 모든 validation을 거친 것이기 때문에 여기서 먼저 파일을 첨부 후 응답을 받아서 다음을 진행한다.
+                     * */
                     getsearchOutcheck();
                 } else {
                     alert(message);
@@ -540,6 +727,26 @@ public class ApplyOutsideApprovalActivity extends ApprovalCommonActivity impleme
 		case R.id.apply_outside_textview_use_owncar_no:
 			selectUserOwnCarButton(false);
 			break;*/
+
+            // kbr 2022.04.18
+            case R.id.apply_outside_button_file:
+                if (uploadList.size() < 1) {
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("*/*");
+
+                    startActivityForResult(intent, UPLOAD_FILE);
+                } else {
+                    SKTDialog d = new SKTDialog(this);
+                    d.getDialog("파일 첨부는 1개만 가능합니다.").show();
+                }
+
+                break;
+
+            case R.id.FILE_CHECK_BUTTON:
+                Log.d(TAG, "++++++++++++++++++++++++++++ file check button");
+                setUploadUI();
+                break;
         } // switch
     }
 
@@ -556,6 +763,10 @@ public class ApplyOutsideApprovalActivity extends ApprovalCommonActivity impleme
         btnOk.setOnClickListener(this);
         Button btnCancel = (Button) findViewById(R.id.apply_outside_button_cancel);
         btnCancel.setOnClickListener(this);
+
+        // kbr 2022.04.18
+        Button btnFile = (Button) findViewById(R.id.apply_outside_button_file);
+        btnFile.setOnClickListener(this);
 
         //2021.08 자차이용여부 사용안함
 	/*	Button btnYes = (Button) findViewById(R.id.apply_outside_button_use_owncar_yes);
@@ -613,10 +824,18 @@ public class ApplyOutsideApprovalActivity extends ApprovalCommonActivity impleme
         csFormCode.setValues(formCodeValues, formCodeCodes);
 
         // 2021.11 사무, 대체휴무 선택시 VISIBLE 변경
+        /*
+        * 0 : 공무    22100
+        * 1 : 사무    22200
+        * 2 : 교육    22300
+        * 3 : 병가    22600
+        * 4 : 사무(대체휴무)  22800
+        * */
         csFormCode.setOnClickListener(new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                if (i == 1 || i == 4) {
+//                if (i == 1 || i == 4) {
+                if (csFormCode.getCode(i).equals("22200") || csFormCode.getCode(i).equals("22800")) {
                     layout_occasion.setVisibility(View.GONE);
                 } else {
                     layout_occasion.setVisibility(View.VISIBLE);

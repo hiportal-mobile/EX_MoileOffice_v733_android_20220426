@@ -347,6 +347,37 @@
                         android:textColor="#555555"
                         android:textSize="28px"
                         android:visibility="invisible" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="#727272" />
+
+                <LinearLayout
+                    android:id="@+id/patternLayout3"
+                    style="@style/mail_sendMailBG1"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:background="@drawable/mail_border_line"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal" >
+
+                    <TextView
+                        style="@style/mail_sendMailListTab1"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:text="내게쓰기 : " />
+
+                    <Button
+                        android:id="@+id/check31"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:background="@drawable/mail_check_off" />
+
                 </LinearLayout>
 
                 <TextView
@@ -397,17 +428,31 @@
                         android:scaleType="fitXY"
                         android:src="@drawable/mail_dotline_480x1" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="12px"
-                        android:layout_marginTop="18px"
-                        android:drawablePadding="5px"
-                        android:drawableRight="@drawable/mail_icon_clip"
-                        android:gravity="center_vertical"
-                        android:text="첨부파일"
-                        android:textColor="@color/mail_Blue_2"
-                        android:textSize="18sp" />
+                        android:layout_marginTop="18px">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="12px"
+                            android:drawablePadding="5px"
+                            android:drawableRight="@drawable/mail_icon_clip"
+                            android:text="첨부파일"
+                            android:textColor="@color/mail_Blue_2"
+                            android:textSize="18sp"/>
+
+                        <TextView
+                            android:id="@+id/fileNumber"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="30px"
+                            android:text="n / m"
+                            android:textColor="@color/mail_Grey"
+                            android:textSize="18sp"/>
+
+                    </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/upload_FILEATTLIST"

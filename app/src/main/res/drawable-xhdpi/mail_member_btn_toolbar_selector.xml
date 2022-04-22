@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-	<item
+<!--	<item
 		android:state_selected="true"
 		android:drawable="@drawable/mail_member_btn_toolbar_f"/>
 	<item
@@ -11,5 +11,35 @@
 		android:drawable="@drawable/mail_member_btn_toolbar_f"/>
 	<item
 		android:state_selected="false"
-		android:drawable="@drawable/mail_member_btn_toolbar_n"/>
+		android:drawable="@drawable/mail_member_btn_toolbar_n"/>-->
+	<item
+		android:state_selected="true"
+		android:state_pressed="true"
+		android:state_focused="true"
+		android:bottom="1dp"
+		android:left="1dp"
+		android:right="1dp"
+		android:top="1dp">
+		<shape android:shape="rectangle" >
+			<stroke
+				android:width="1dp"
+				android:color="#00468a" />
+
+			<solid android:color="#0059b0" />
+		</shape>
+	</item>
+	<item
+		android:state_selected="false"
+		android:bottom="1dp"
+		android:left="1dp"
+		android:right="1dp"
+		android:top="1dp">
+		<shape android:shape="rectangle" >
+			<stroke
+				android:width="1dp"
+				android:color="#00468a" />
+
+			<solid android:color="#0059b0" />
+		</shape>
+	</item>
 </selector>

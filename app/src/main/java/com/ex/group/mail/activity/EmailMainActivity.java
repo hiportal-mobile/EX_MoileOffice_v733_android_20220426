@@ -613,6 +613,9 @@ public class EmailMainActivity extends SKTActivity implements OnClickListener, O
 //					Log.i(TAG, "list click =======/ne-mail address : "+EmailClientUtil.emailAddress);
 					intent = new Intent(getApplicationContext(), EmailReceiveActivity.class);
 					intent.putExtra("mainData", adapter.getItem(paramInt));
+					// kbr 2022.04.13
+					intent.putExtra("empName", EmailClientUtil.empNm);
+					intent.putExtra("empId", EmailClientUtil.id);
 					startActivity(intent);
 				}
 			});
@@ -632,6 +635,9 @@ public class EmailMainActivity extends SKTActivity implements OnClickListener, O
 					Log.i(TAG, "doc_list click =======/ne-mail address : "+ EmailClientUtil.emailAddress);
 					intent = new Intent(getApplicationContext(), EmailReceiveActivity.class);
 					intent.putExtra("mainData", doc_adapter.getItem(no));
+					// kbr 2022.04.13
+					intent.putExtra("empName", EmailClientUtil.empNm);
+					intent.putExtra("empId", EmailClientUtil.id);
 					startActivity(intent);
 				}
 			});
@@ -776,6 +782,10 @@ public class EmailMainActivity extends SKTActivity implements OnClickListener, O
 			intent = new Intent(this, EmailWriteActivity.class);
 			intent.putExtra("aaa", "aaa");
 			intent.putExtra("refer", "main");
+			// kbr 2022.04.12
+			intent.putExtra("empName", EmailClientUtil.empNm);
+			intent.putExtra("empId", EmailClientUtil.id);
+
 			startActivity(intent);
 			break;
 	/*	case R.id.job1:

@@ -2,6 +2,7 @@ package com.ex.group.folder;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -16,7 +17,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.CookieManager;
 import android.webkit.HttpAuthHandler;
+import android.webkit.JsResult;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -48,8 +52,8 @@ public class WebViewActivity extends AppCompatActivity {
 
         Log.i(TAG, "WebViewActivity onCreate");
         Intent intent = getIntent();
-        hybridUrl = intent.getStringExtra("hybridUrl");
-//		Log.i(TAG, "hybridUrl :"+hybridUrl);
+        hybridUrl = intent.getStringExtra("hybridUrl"); // http://128.200.121.68:9000/elecapp/init.do
+		Log.i(TAG, "------------------------------------------------------------------------------hybridUrl :"+hybridUrl);
 //		Toast.makeText(WebViewActivity.this, "url : "+hybridUrl, Toast.LENGTH_LONG).show();
 
         progress = new CustomprogressDialog(WebViewActivity.this,null);
@@ -69,6 +73,9 @@ public class WebViewActivity extends AppCompatActivity {
 
 
         webView = (WebView) findViewById(R.id.webView);
+
+        /* kbr 2022.04.14 */
+        /* kbr 2022.04.14 */
         webView.loadUrl(hybridUrl);
 
         WebSettings webSettings = webView.getSettings();
@@ -101,7 +108,7 @@ public class WebViewActivity extends AppCompatActivity {
 
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
-            public boolean onJsAlert(WebView view, String url, String message, final android.webkit.JsResult result)
+            public boolean onJsAlert(WebView view, String url, String message, final JsResult result)
             {
                 new AlertDialog.Builder(WebViewActivity.this).setTitle("알림").setMessage(message).setPositiveButton(android.R.string.ok,
                         new AlertDialog.OnClickListener(){
@@ -114,7 +121,7 @@ public class WebViewActivity extends AppCompatActivity {
         });
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
-            public boolean onJsConfirm(WebView view, String url, String message, final android.webkit.JsResult result){
+            public boolean onJsConfirm(WebView view, String url, String message, final JsResult result){
                 new AlertDialog.Builder(WebViewActivity.this).setTitle("알림").setMessage(message).setPositiveButton(android.R.string.ok,
                         new AlertDialog.OnClickListener(){
                             public void onClick(DialogInterface dialog, int which){

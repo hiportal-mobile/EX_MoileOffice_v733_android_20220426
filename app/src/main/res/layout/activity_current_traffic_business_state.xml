@@ -475,13 +475,13 @@
                 android:id="@+id/fab_bdack"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="30dp"
                 android:clickable="false"
                 android:elevation="3dp"
-                android:scaleType="fitCenter"
                 android:padding="15dp"
-                android:layout_marginRight="30dp"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
+                android:scaleType="fitCenter"
                 android:src="@drawable/floating_prev" />
         </RelativeLayout>
 

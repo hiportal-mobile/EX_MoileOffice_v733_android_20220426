@@ -27,6 +27,7 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -94,6 +95,7 @@ public class EmailReceiveActivity extends SKTActivity implements
 	private EditText searchEdit = null;
 	private EmailMainListData mainData = null;
 	private Menu mMenu = null;
+	private ImageButton cm_send_email_btn = null;	// kbr 2022.04.13
 	private int receivePosition = 0;
 	private int searchPosition = 0;
 	private int pageNumber = 1; // 현제 페이지
@@ -263,6 +265,8 @@ public class EmailReceiveActivity extends SKTActivity implements
 			adapter_search = new EmailReceiveListAdapter(this, R.layout.mail_list_item);
 			adapter_del = new EmailReceiveListAdapter(this, R.layout.mail_list_item);
 
+			cm_send_email_btn = (ImageButton) findViewById(R.id.common_send_email_btn);	// kbr 2022.04.13
+
 			messageText = "에 메세지가 없습니다.";
 
 			EmailClientUtil.companyCd = StringUtil.isNull(SKTUtil.getCheckedCompanyCd(this)) ? EnvironManager.getTestCompanyCd() : SKTUtil.getCheckedCompanyCd(this);
@@ -279,6 +283,8 @@ public class EmailReceiveActivity extends SKTActivity implements
 			receiveList.setOnItemClickListener(this);
 			receiveList_search.setOnItemClickListener(this);
 			receiveList_del.setOnItemClickListener(this);
+
+			cm_send_email_btn.setOnClickListener(this);	// kbr 2022.04.13
 
 			findViewById(R.id.ALLDel).setOnClickListener(this);
 			findViewById(R.id.Del).setOnClickListener(this);
@@ -1766,6 +1772,14 @@ Log.i("EmailReceiveActivity", "userID =============="+ EmailClientUtil.nedmsID);
 			searchPageNumber = 1;
 			new Action(EmailClientUtil.COMMON_MAILADV_LIST).execute("");
 
+			// kbr 2022.04.13
+		} else if (v.getId() == R.id.common_send_email_btn) {
+			intent = new Intent(this, EmailWriteActivity.class);
+			intent.putExtra("aaa", "aaa");
+			intent.putExtra("refer", "main");
+			intent.putExtra("empName", EmailClientUtil.empNm);
+			intent.putExtra("empId", EmailClientUtil.id);
+			startActivity(intent);
 		}
 
 	}

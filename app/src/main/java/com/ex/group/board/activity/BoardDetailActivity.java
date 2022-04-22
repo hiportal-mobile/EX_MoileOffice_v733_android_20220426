@@ -41,6 +41,8 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ex.group.board.constants.Constants.RequestCode;
+
 /**
  * 
  *  <pre>
@@ -321,7 +323,8 @@ public class BoardDetailActivity extends BoardActivity implements OnClickListene
 
 
 	private void finishActivity(boolean flag){
-		/*if(flag){
+		// kbr 2022.04.12
+		if(flag){
 			finishActivity(RequestCode.DetailActivity);
 			setResult(RESULT_OK);
 			finish();			
@@ -329,7 +332,7 @@ public class BoardDetailActivity extends BoardActivity implements OnClickListene
 			finishActivity(RequestCode.DetailActivity);
 			setResult(RESULT_CANCELED);
 			finish();
-		}*/
+		}
 	}
 
 

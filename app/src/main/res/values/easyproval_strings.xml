@@ -17,9 +17,10 @@
 
     <string name="easyaproval_label_selectall">Select All</string>
 
-    <string name="easyaproval_label_done">Done</string>
+    <!-- kbr 2022.04.12 done / cancle -->
+    <string name="easyaproval_label_done">확인</string>
 
-    <string name="easyaproval_label_cancel">Cancel</string>
+    <string name="easyaproval_label_cancel">취소</string>
 
     <string name="easyaproval_label_add">Add</string>
 
@@ -252,5 +253,9 @@
     <string name="easyaproval_dialog_no_member">선택할 수 있는 직원이 없습니다.</string>
 
     <string name="easyaproval_select_team">팀 선택</string>
+
+    <!-- kbr 2022.04.18 -->
+    <string name="easyaproval_file_del_message">파일이 목록에서 삭제됩니다.</string>
+
 </resources>
 

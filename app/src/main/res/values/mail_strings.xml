@@ -86,8 +86,9 @@
     <string name="mail_label_tab2">Organ.Chart</string>
     <string name="mail_label_search">Search</string>
     <string name="mail_label_selectall">Select All</string>
-    <string name="mail_label_done">Done</string>
-    <string name="mail_label_cancel">Cancel</string>
+    <!-- kbr 2022.04.12 -->
+    <string name="mail_label_done">확인</string>
+    <string name="mail_label_cancel">취소</string>
     <string name="mail_label_add">Add</string>
     <string name="mail_register_button">Send</string>
     <string name="mail_text_send">Send</string>

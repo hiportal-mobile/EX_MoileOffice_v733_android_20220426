@@ -98,6 +98,7 @@ import com.ex.group.folder.utility.Constants;
 import com.ex.group.folder.utility.CustomVPN;
 import com.ex.group.folder.utility.LogMaker;
 import com.ex.group.mail.activity.EmailMainActivity;
+import com.ex.group.mail.activity.EmailWriteActivity;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.skt.pe.common.vpn.SGVPNConnection;
 import com.sktelecom.ssm.lib.SSMLib;
@@ -289,6 +290,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         text_date.setText(today + "요일");
         text_name.setText(getSharedString("USERNAME"));
         text_id.setText(getSharedString("USERID"));
+
+
         Log.d(TAG, "[EJY] fontSize 0 : "+getIsTablet(MainActivity.this));
         Log.d(TAG, "[EJY] fontSize 1 : "+getScreenSize(MainActivity.this) + 300);
         //2021-04-20 [EJY] Tablet 인 경우 글자크기 설정
@@ -1350,7 +1353,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 while (it.hasNext()) {
                     RequestInitInfo.AppInfoList app = (RequestInitInfo.AppInfoList) it.next();
 
-                    Log.d("JSJ","JSJ appname check " + app.getAppNm());
+                    Log.d("JSJ","JSJ appname check " + app.getAppNm() + "\n");
+                    Log.d("JSJ","app id :  " + app.getAppId() + "\n");
                     if (app.getAppType().equals("N") || app.getAppType().equals("M")) {
                         AppdataList CD = new AppdataList();
                         CD.setNeedUpdate(app.getNeedUpdate());
@@ -1360,50 +1364,54 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                         CD.setAppId(app.getAppId());
                         CD.setAppVer(app.getAppVer());
                         CD.setAppNm(app.getAppNm());
-                        if("게시판".equals(app.getAppNm())){
+                        /*
+                            kbr 2022.04.13
+                            id 로 앱 아이콘 생성
+                        */
+                        if(contextMain.getString(R.string.board_app_id).equals(app.getAppId())){    // 게시판
                             CD.setDrawableIcon2(R.drawable.icon_board2);
                             CD.setDrawableIcon3(R.drawable.icon_board3);
-                        }else if("사내메일".equals(app.getAppNm())){
+                        }else if(contextMain.getString(R.string.mail_app_id).equals(app.getAppId())){  // 사내메일
                             CD.setDrawableIcon2(R.drawable.icon_mail2);
                             CD.setDrawableIcon3(R.drawable.icon_mail3);
-                        }else if("메모보고".equals(app.getAppNm())){
+                        }else if(contextMain.getString(R.string.memo_app_id).equals(app.getAppId())){  // 메모보고
                             CD.setDrawableIcon2(R.drawable.icon_memo2);
                             CD.setDrawableIcon3(R.drawable.icon_memo3);
-                        }else if("전자결재".equals(app.getAppNm())){
+                        }else if(contextMain.getString(R.string.ele_app_id).equals(app.getAppId())){  // 전자결재
                             CD.setDrawableIcon2(R.drawable.icon_stamp);
                             CD.setDrawableIcon3(R.drawable.icon_approve3);
-                        }else if("직원검색".equals(app.getAppNm())){
+                        }else if(contextMain.getString(R.string.employee_app_id).equals(app.getAppId())){  // 직원검색
                             CD.setDrawableIcon2(R.drawable.icon_member2);
                             CD.setDrawableIcon3(R.drawable.icon_member3);
-                        }else if("외출휴가".equals(app.getAppNm())){
+                        }else if(contextMain.getString(R.string.easyaproval_app_id).equals(app.getAppId())){  // 외출휴가
                             CD.setDrawableIcon2(R.drawable.icon_break2);
                             CD.setDrawableIcon3(R.drawable.icon_break3);
-                        }else if("감사정보".equals(app.getAppNm())){
+                        }else if(contextMain.getString(R.string.exaudit_app_id).equals(app.getAppId())){  // 감사정보
                             CD.setDrawableIcon2(R.drawable.icon_inspection2);
                             CD.setDrawableIcon3(R.drawable.icon_inspect3);//해당 아이콘 없음 (감사정보)
-                        }else if("재난관리앱".equals(app.getAppNm())){
+                        }else if(contextMain.getString(R.string.disaster_app_id).equals(app.getAppId())){  // 재난관리앱
                             CD.setDrawableIcon2(R.drawable.icon_disaster2);
                             CD.setDrawableIcon3(R.drawable.icon_disaster3);
-                        }else if("국회업무".equals(app.getAppNm())){
+                        }else if(contextMain.getString(R.string.assembly_app_id).equals(app.getAppId())){  // 국회업무
                             CD.setDrawableIcon2(R.drawable.icon_assembly2);
                             CD.setDrawableIcon3(R.drawable.icon_assembly3);
-                        }else if("법무정보".equals(app.getAppNm())){
+                        }else if(contextMain.getString(R.string.law_app_id).equals(app.getAppId())){  // 법무정보
                             CD.setDrawableIcon2(R.drawable.icon_law2);
                             CD.setDrawableIcon3(R.drawable.icon_law3);
-                        }else if("스마트정비관리".equals(app.getAppNm())) {
+                        }else if(contextMain.getString(R.string.smartmm_app_id).equals(app.getAppId())){  // 스마트정비관리
                             app.setVpnYn("N");//강제로 VPN아래 목록으로 설정.
                             CD.setDrawableIcon2(R.drawable.icon_repair2);
                             CD.setDrawableIcon3(R.drawable.icon_repair3);
-                        }else if("exBus".equals(app.getAppNm())) {
+                        }else if(contextMain.getString(R.string.exbus_app_id).equals(app.getAppId())){  // EX출퇴근
                             CD.setDrawableIcon2(R.drawable.icon_bus2);
                             CD.setDrawableIcon3(R.drawable.icon_bus2);//해당 아이콘 없음 (exBus)
-                        }else if("터널암판정(검측)".equals(app.getAppNm())) {
+                        }else if(contextMain.getString(R.string.tunnel_app_id).equals(app.getAppId())){  // 터널암판정(검측)
                             CD.setDrawableIcon2(R.drawable.icon_tunnel2);
                             CD.setDrawableIcon3(R.drawable.icon_tunnel2);//해당 아이콘 없음 (터널암판정(검측))
-                        }else if("구조물점검".equals(app.getAppNm())) {
+                        }else if(contextMain.getString(R.string.structure_app_id).equals(app.getAppId())){  // 구조물점검
                             CD.setDrawableIcon2(R.drawable.icon_structure);
                             CD.setDrawableIcon3(R.drawable.icon_structure);//해당 아이콘 없음 (구조물점검)
-                        }else if("ex상황속보".equals(app.getAppNm())) {
+                        }else if(contextMain.getString(R.string.sqa_app_id).equals(app.getAppId())){  // EX상황속보
                             CD.setDrawableIcon2(R.drawable.icon_exflash2);
                             CD.setDrawableIcon3(R.drawable.icon_exflash2);//해당 아이콘 없음 (ex상황속보)
                         }

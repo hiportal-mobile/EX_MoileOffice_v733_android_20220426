@@ -46,10 +46,25 @@
                 android:orientation="horizontal"
                 android:padding="@dimen/easyaproavl_space01">
 
+                <!-- kbr 2022.04.18 -->
+                <Button
+                    android:id="@+id/apply_outside_button_file"
+                    android:layout_width="@dimen/easyaproavl_width04"
+                    android:layout_height="@dimen/easyaproavl_height03"
+                    android:background="@drawable/board_btn_attach_file_d"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    />
+                <!-- kbr 2022.04.18 -->
+
                 <Button
                     android:id="@+id/apply_outside_button_ok"
                     android:layout_width="@dimen/easyaproavl_width07"
-                    android:layout_height="@dimen/easyaproavl_height03"
+                    android:layout_height="34dp"
                     android:background="@drawable/easy_btn_input" />
 
                 <Button
@@ -139,14 +154,19 @@
                         <!-- 외출유형 Spinner -->
                         <com.ex.group.approval.easy.widget.CodeSpinner
                             android:id="@+id/apply_outside_spinner_formcode"
-                            android:layout_width="@dimen/easyaproavl_width02"
+                            android:layout_width="wrap_content"
                             android:layout_height="45dp"
                             android:layout_marginTop="3dp"
                             android:background="@drawable/login_id_edit_box"
                             android:gravity="center"
+                            android:minWidth="@dimen/easyaproavl_width02"
+                            android:paddingLeft="@dimen/easyaproavl_space02"
                             android:paddingTop="@dimen/easyaproavl_space01"
+                            android:paddingRight="@dimen/easyaproavl_space02"
                             android:paddingBottom="@dimen/easyaproavl_space01"
+                            android:textAlignment="center"
                             android:textColor="#16ADFE"
+
                             android:textSize="@dimen/easyaproavl_textSize02"
                             custom:codes="@array/easyaproval_apply_outside_spinner_formcode_code"
                             custom:defaultIndex="0"
@@ -334,47 +354,45 @@
                 <!-- 구분선 -->
                 <LinearLayout style="@style/easyproval_divide_line" />
 
-                <!-- 자기차량이용여부 -->
-                <!-- <LinearLayout style="@style/easyaproavl_people_layout" android:visibility="gone">
-                     <TextView
-                         style="@style/easyproval_apply_left_title_name_field"
-                         android:text="자기차량\n이용여부" />
+                <LinearLayout
+                    android:id="@+id/upload_fileLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#E7E7E7"
+                    android:orientation="vertical"
+                    android:visibility="gone" >
 
-                     <Button
-                         android:id="@+id/apply_outside_button_use_owncar_yes"
-                         style="@style/easyaproval_radio_button"
-                         android:layout_width="@dimen/easyaproavl_width06"
-                         android:layout_height="@dimen/easyaproavl_height06"
-                         />
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/mail_dotline_480x1" />
 
-                     <TextView
-                         android:id="@+id/apply_outside_textview_use_owncar_yes"
-                         style="@style/easyaproval_radio_text"
-                         android:text="사용" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18px">
 
-                     <Button
-                         android:id="@+id/apply_outside_button_use_owncar_no"
-                         style="@style/easyaproval_radio_button"
-                         android:layout_width="@dimen/easyaproavl_width06"
-                         android:layout_height="@dimen/easyaproavl_height06"
-                         android:layout_marginLeft="@dimen/easyaproavl_space01" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="12px"
+                            android:drawablePadding="5px"
+                            android:drawableRight="@drawable/mail_icon_clip"
+                            android:text="첨부파일"
+                            android:textColor="@color/mail_Blue_2"
+                            android:textSize="18sp"/>
 
-                     <TextView
-                         android:id="@+id/apply_outside_textview_use_owncar_no"
-                         style="@style/easyaproval_radio_text"
-                         android:text="사용안함" />
+                    </LinearLayout>
 
-                     <TextView
-                         android:id="@+id/apply_outside_textview_car_number"
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         android:paddingLeft="@dimen/easyaproavl_space03"
-                         android:paddingRight="@dimen/easyaproavl_space03"
-                         android:textSize="@dimen/easyaproavl_textSize03" />
-                 </LinearLayout> -->
-
-                <!-- 구분선 -->
-                <LinearLayout style="@style/easyproval_divide_line" />
+                    <LinearLayout
+                        android:id="@+id/upload_FILEATTLIST"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingBottom="10px" >
+                    </LinearLayout>
+                </LinearLayout>
 
             </LinearLayout>
         </ScrollView>

@@ -312,4 +312,21 @@
         <item>13sp</item>
     </array>
 
+    <!--
+        kbr 2022.04.13
+        app id 변수 생성
+    -->
+    <string name="memo_app_id">MOGP000048</string>
+    <string name="ele_app_id">MOGP000047</string>
+    <string name="employee_app_id">MOGP000004</string>
+    <string name="exaudit_app_id">MOGP000013</string>
+    <string name="disaster_app_id">MOGP000035</string>
+    <string name="assembly_app_id">MOGP000024</string>
+    <string name="law_app_id">MOGP000026</string>
+    <string name="smartmm_app_id">MOGP000042</string>
+    <string name="exbus_app_id">MOGP000044</string>
+    <string name="tunnel_app_id">MOGP000034</string>
+    <string name="structure_app_id">MOGP000021</string>
+    <string name="sqa_app_id">MOGP000046</string>
+
 </resources>

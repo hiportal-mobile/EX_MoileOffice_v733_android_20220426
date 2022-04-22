@@ -2,17 +2,22 @@ package com.ex.group.mail.activity;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
+import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Selection;
@@ -39,8 +44,10 @@ import android.widget.EditText;
 import android.widget.Filterable;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ex.group.mail.addressbook.activity.AddressTabActivity;
+import com.ex.group.mail.addressbook.activity.BaseActivity;
 import com.ex.group.mail.data.EmailDetailData;
 import com.ex.group.mail.data.EmailFileListData;
 import com.ex.group.mail.data.EmailWriteSQLite;
@@ -62,6 +69,8 @@ import com.skt.pe.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import com.ex.group.folder.R;
 /**
@@ -72,6 +81,8 @@ import com.ex.group.folder.R;
  */
 public class EmailWriteActivity extends SKTActivity implements OnClickListener,
         OnFocusChangeListener, OnKeyListener, TextWatcher {
+
+	private final String TAG = "EmailWriteActivity";
 
 	private final String MAIL_TYPE_REPLY = "reply";
 	private final String MAIL_TYPE_REPLYALL = "replyall";
@@ -118,6 +129,7 @@ public class EmailWriteActivity extends SKTActivity implements OnClickListener,
 	private Button replyOptionChkBtn = null;
 	private Button fastOptionChkBtn = null;
 	private Button hideOptionChkBtn = null;
+	private Button sendMyselfBtn = null;	// kbr 2022.04.11
 	private Button sendButton = null;
 	
 	private Button addrButton = null;
@@ -134,6 +146,10 @@ public class EmailWriteActivity extends SKTActivity implements OnClickListener,
 
 	private ArrayList<String> fileIdList = null;
 	private ArrayList<FileContents> filecontents = null;
+
+	// kbr 2022.04.11
+	private String empName = null;
+	private String empId = null;
 	
 	@Override
 	protected void onDestroy() {
@@ -173,6 +189,7 @@ public class EmailWriteActivity extends SKTActivity implements OnClickListener,
 		replyOptionChkBtn = (Button) findViewById(R.id.check22);
 		fastOptionChkBtn = (Button) findViewById(R.id.check23);
 		hideOptionChkBtn = (Button) findViewById(R.id.check24);
+		sendMyselfBtn = (Button) findViewById(R.id.check31);	// kbr 2022.04.11
 		sendButton = (Button) findViewById(R.id.requestBtn);
 		
 		addrButton = (Button) findViewById(R.id.AddrButton);
@@ -187,6 +204,7 @@ public class EmailWriteActivity extends SKTActivity implements OnClickListener,
 		replyOptionChkBtn.setOnClickListener(this);
 		fastOptionChkBtn.setOnClickListener(this);
 		hideOptionChkBtn.setOnClickListener(this);
+		sendMyselfBtn.setOnClickListener(this);	// kbr 2022.04.11
 		sendButton.setOnClickListener(this);
 
 		TextView settitle = (TextView) findViewById(R.id.settitle);
@@ -268,6 +286,9 @@ public class EmailWriteActivity extends SKTActivity implements OnClickListener,
 			boxid = intent.getStringExtra("boxid");
 			boxtype = intent.getStringExtra("boxtype");
 
+			// kbr 2022.04.12
+			empName = intent.getStringExtra("empName");
+			empId = intent.getStringExtra("empId");
 		}
 
 		EditText t_name = (EditText) findViewById(R.id.textSubject);
@@ -939,9 +960,9 @@ public class EmailWriteActivity extends SKTActivity implements OnClickListener,
 			 */
 			// if(uploadList != null && uploadList.size() >= 5 || chkCnt) {
 
-			if (uploadList != null && uploadList.size() >= 5) {
+			if (uploadList != null && uploadList.size() >= 20) {
 				SKTDialog d = new SKTDialog(this);
-				d.getDialog("파일 첨부는 5개까지 가능합니다.").show();
+				d.getDialog("파일 첨부는 20개까지 가능합니다.").show();
 				return;
 			}
 			/**마시맬로 버전에서 갤러리에서 사진 선택시 앱이 중지 되서 수정함
@@ -952,8 +973,16 @@ public class EmailWriteActivity extends SKTActivity implements OnClickListener,
 			
 			Intent intent = new Intent(Intent.ACTION_PICK);
 			intent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
+//
+////			kbr 2022.03.31
+			intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+			intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+//			startActivityForResult(intent, UPLOAD_FILE);	// 갤러리로 바로 이동
 			
-			startActivityForResult(intent, UPLOAD_FILE);
+//			kbr 2022.04.04	갤러리 선택 탭 띄우기
+			startActivityForResult(Intent.createChooser(intent, "선택해주세요."), UPLOAD_FILE);
+//			startActivityForResult(Intent.createChooser(intent.setPackage("com.google.android.apps.photos"), "pick photo"), UPLOAD_FILE);	// 포토 app 으로 바로 연결
 
 		} else if (v.getId() == R.id.check1) {
 			setCheckedDrawable((Button) v);
@@ -988,6 +1017,50 @@ public class EmailWriteActivity extends SKTActivity implements OnClickListener,
 						R.drawable.mail_check_on));
 			}
 			;
+		// kbr 2022.04.18
+		} else if (v.getId() == R.id.check31) {	// 내게쓰기
+
+			Button optionChkBtn = (Button) findViewById(v.getId());
+			if ("1".equals(chkBoxDefaultValue2(optionChkBtn.getTag()))) {	// 내게쓰기 off
+				optionChkBtn.setTag("");
+				optionChkBtn.setBackground(getResources().getDrawable(
+						R.drawable.mail_check_off));
+				if (realAddrMap.containsKey(empName)) {
+					realAddrMap.remove(empName);
+					String resultList = "";
+					for (String name : toList.split(";")) {
+						if (!name.equals(empName)) {
+							resultList += (name + ";");
+						}
+					}
+					toList = resultList;
+				}
+			} else {	// 내게쓰기 on
+				optionChkBtn.setTag("1");
+				optionChkBtn.setBackground(getResources().getDrawable(
+						R.drawable.mail_check_on));
+				if (!realAddrMap.containsKey(empName)) {
+					realAddrMap.put(empName, empId);
+					toList += (empName + ";");
+					String resultList = "";
+					String[] strArr = toList.split(";");
+					int index = 0;
+					for (int i=0; i<strArr.length; i++) {
+						if (i < strArr.length - 1 && strArr[i].equals(empName)) {
+							resultList = toList;
+							break;
+						}
+						else if (i == strArr.length-1 && !strArr[i].equals(empName)) {
+							toList += (empName + ";");
+						}
+					}
+				}
+			}
+			;
+
+			et1.requestFocus();
+			onFocusChangeTextView(et1, toList);
+
 		}
 
 	}
@@ -1210,57 +1283,6 @@ public class EmailWriteActivity extends SKTActivity implements OnClickListener,
 		} else {
 			params.put("content", body);
 		}
-		// &kind=forward(전달 : forward, 회신 : reply, 재발신 : resend), &mailID=9783,
-		// fileiD
-
-		// String test =
-		// "<?xml version=\"1.0\" encoding=\"UTF-8\"?><contentBinId></contentBinId><contentUrl></contentUrl><title>[재발신]모바일 첨부있음-039</title><senderId></senderId><senderDesc></senderDesc><sendTime></sendTime><isHtml>1</isHtml><isFast>0</isFast><isReply>0</isReply><isSecret>0</isSecret><isWork>1</isWork><isHide>0</isHide><isForward>0</isForward><rcpt><NFMailRecipientD><rcptKind>1</rcptKind><nodeKind>1</nodeKind><idOrEmail>19203920</idOrEmail><alias>김기형</alias></NFMailRecipientD></rcpt><rcpt><NFMailRecipientD><rcptKind>1</rcptKind><nodeKind>1</nodeKind><idOrEmail>18715618</idOrEmail><alias>최낙진</alias></NFMailRecipientD></rcpt>";
-		// params.put("postInfo", test);
-		// params.put("content", "모바일에서 보냅니다");
-
-		/*
-		 * //2014-02-06 JSJ 사원 아이디,이름 추가 ,작성자 이메일주소 params.put("empId",
-		 * EmailClientUtil.id); params.put("empName", EmailClientUtil.empNm);
-		 * Log.d("","primitiveprimitiveprimitive " + EmailClientUtil.empNm);
-		 * params.put("emailAddress", EmailClientUtil.emailAddress);
-		 * 
-		 * params.put("SUBJECT", subject); params.put("BODY", body);
-		 * params.put("ID", mailType); params.put("bcc", openFlag);
-		 * if(uploadList.size() > 0) { params.put("bodyType", uploadkey); }
-		 * 
-		 * 
-		 * if(!StringUtil.isNull(type) && (type.equals(MAIL_TYPE_FORWARD) ||
-		 * type.equals(MAIL_TYPE_REPLY) || type.equals(MAIL_TYPE_RESEND))) {
-		 * params.put("mailBoxType", boxtype); params.put("mailFolderId",
-		 * boxid); params.put("docNumber", detailData.getMailId());
-		 * params.put("docYearmon", detailData.getChangeKey()); }
-		 * 
-		 * if(!StringUtil.isNull(a_to)){ String[] to = a_to.trim().split(";");
-		 * String[] cc = new String[to.length]; for(int i = 0 ; i < to.length ;
-		 * i ++){ if(!StringUtil.isNull(realAddrMap.get(to[i]))) {
-		 * Log.d("xxxxxxxxxxxx", "xxxxxxxxxxxxxx   " + realAddrMap.get(to[i]));
-		 * cc[i] = realAddrMap.get(to[i]); } } params.put("cc", cc);
-		 * params.put("to", to); Log.d("","##################### mailTest cc ="
-		 * + cc); Log.d("","##################### mailTest to =" + to); }
-		 * 
-		 * Log.d("","##################### mailTest  EmailClientUtil.id =" +
-		 * EmailClientUtil.id);
-		 * Log.d("","##################### mailTest EmailClientUtil.empNm =" +
-		 * EmailClientUtil.empNm);
-		 * Log.d("","##################### mailTest EmailClientUtil.emailAddress ="
-		 * + EmailClientUtil.emailAddress);
-		 * Log.d("","##################### mailTest subject =" + subject);
-		 * Log.d("","##################### mailTest body =" + body);
-		 * Log.d("","##################### mailTest mailType =" + mailType);
-		 * Log.d("","##################### mailTest openFlag =" + openFlag);
-		 * Log.d("","##################### mailTest boxtype =" + boxtype);
-		 * Log.d("","##################### mailTest boxid =" + boxid); //
-		 * Log.d("","##################### mailTest detailData.getMailId() =" +
-		 * detailData.getMailId()); //
-		 * Log.d("","##################### mailTest detailData.getChangeKey() ="
-		 * + detailData.getChangeKey());
-		 */
-		// Log.e("ksh6327", postInfo.toString());
 		Controller controller = new Controller(this);
 		return controller.request(params, true);
 	}
@@ -1315,11 +1337,9 @@ public class EmailWriteActivity extends SKTActivity implements OnClickListener,
 				final Button fileCheckBtn = (Button) tempLayout
 						.findViewById(R.id.FILE_CHECK_BUTTON);
 				if (uploadList.get(i).getM_szIsEcm().equals("true")) {
-					fileCheckBtn.setBackgroundDrawable(getResources()
-							.getDrawable(R.drawable.mail_check_on));
+					fileCheckBtn.setBackground(getResources().getDrawable(R.drawable.mail_check_on));
 				} else {
-					fileCheckBtn.setBackgroundDrawable(getResources()
-							.getDrawable(R.drawable.mail_check_off));
+					fileCheckBtn.setBackground(getResources().getDrawable(R.drawable.mail_check_off));
 				}
 				final int fileIndex = i;
 				fileCheckBtn.setOnClickListener(new OnClickListener() {
@@ -1328,23 +1348,24 @@ public class EmailWriteActivity extends SKTActivity implements OnClickListener,
 					public void onClick(View arg0) {
 						if (uploadList.get(fileIndex).getM_szIsEcm()
 								.equals("true")) {
-							uploadList.get(fileIndex).setM_szIsEcm("false");
-							fileCheckBtn.setBackgroundDrawable(getResources()
-									.getDrawable(R.drawable.mail_check_off));
+							uploadList.remove(fileIndex);
+							setUploadUI();
 						} else {
 							uploadList.get(fileIndex).setM_szIsEcm("true");
-							fileCheckBtn.setBackgroundDrawable(getResources()
-									.getDrawable(R.drawable.mail_check_on));
+							fileCheckBtn.setBackground(getResources().getDrawable(R.drawable.mail_check_on));
 						}
 					}
 				});
 				TextView txtFileName = (TextView) tempLayout
 						.findViewById(R.id.FILE_NAME);
 				txtFileName.setText(uploadList.get(i).getM_szName());
+				// kbr 2022.04.11
+				TextView fileNum = (TextView) findViewById(R.id.fileNumber);
+				fileNum.setText( uploadList.size()+ " / 20");
 				layout.addView(tempLayout);
 			}
 		} else {
-			findViewById(R.id.fileLayout).setVisibility(View.GONE);
+			findViewById(R.id.upload_fileLayout).setVisibility(View.GONE);
 		}
 	}
 
@@ -1368,7 +1389,8 @@ public class EmailWriteActivity extends SKTActivity implements OnClickListener,
 
 	private String[] getRealImagePath(Uri uriPath) {
 		String[] proj = { MediaStore.Images.Media.DATA };
-		Cursor cursor = managedQuery(uriPath, proj, null, null, null);
+
+		Cursor cursor = getContentResolver().query(uriPath, proj, null, null, null);
 		int index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
 		cursor.moveToFirst();
 
@@ -1377,6 +1399,7 @@ public class EmailWriteActivity extends SKTActivity implements OnClickListener,
 
 		return new String[] { fullPath, fileName };
 	}
+
 
 	/**
 	 * onActivityResult
@@ -1394,30 +1417,80 @@ public class EmailWriteActivity extends SKTActivity implements OnClickListener,
 		// 첨부파일
 		if (requestCode == UPLOAD_FILE) {
 			if (resultCode == RESULT_OK) {
-				Uri imgUri = data.getData();
-				
-				Log.e("EmailWriteActivity", "imgUri.getPath ================== "+imgUri.getPath());
-				
-				if (StringUtil.isNull(imgUri.getPath())) {
-					return;
-				}
-				String[] file = getRealImagePath(imgUri);
-				for (int a = 0; a < uploadList.size(); a++) {
-					String uploadPath = uploadList.get(a).getM_szContent();
-					if (file[0].equals(uploadPath)) {
+				// kbr 2022.03.31
+				if (data.getClipData() == null) {	// 1장 고른 경우
+					Log.d("EmailWriteActiivty", " - onActivityResult : single choice");
+					Uri imgUri = data.getData();
+					if (StringUtil.isNull(imgUri.getPath())) {
 						return;
 					}
+					String[] file = getRealImagePath(imgUri); // {파일 실제 경로, 파일 이름}
+					for (int a = 0; a < uploadList.size(); a++) {
+						String uploadPath = uploadList.get(a).getM_szContent(); // getM_szContent() : 파일 실제 경로(이름 포함)
+						if (file[0].equals(uploadPath)) {
+							Toast.makeText(this, "동일 파일이 이미 있습니다.", Toast.LENGTH_SHORT).show();
+							return;
+						}
+					}
+					EmailFileListData filelist = new EmailFileListData();
+					filelist.setM_szName(file[1]);
+					filelist.setM_szContent(file[0]);
+					filelist.setM_szIsEcm("true");
+
+					uploadList.add(filelist);
+				} else {	// 2장 이상 고른 경우
+					Log.d("EmailWriteActiivty", " - onActivityResult : multiple choice");
+					ClipData clipData = data.getClipData();
+
+					// 총 이미지 개수 5개 초과
+					if (clipData.getItemCount() + uploadList.size() > 20) {
+						Toast.makeText(this, "파일 첨부는 20개까지 가능합니다.", Toast.LENGTH_SHORT).show();
+						return;
+					// 총 이미지 개수가 20개 이하
+					} else {
+						Uri imgUri = null;
+						String[] file = null;
+						int dupNum = 0;
+						boolean dupChk;
+						for (int a = 0; a < clipData.getItemCount(); a++) {
+							dupChk = false;
+							imgUri = clipData.getItemAt(a).getUri();
+							if (StringUtil.isNull(imgUri.getPath())) {
+								continue;
+							}
+							file = getRealImagePath(imgUri); // {파일 실제 경로, 파일 이름}
+							Log.d("EmailWriteActivity", " - " + dupNum + " file path : " + file[0]);
+							Log.d("EmailWriteActivity", " - " + dupNum + " file name : " + file[1]);
+							for (int b = 0; b < uploadList.size(); b++) {
+								String uploadPath = uploadList.get(b).getM_szContent(); // getM_szContent() : 파일 실제 경로(이름 포함)
+								if (file[0].equals(uploadPath)) {
+									++dupNum;
+									dupChk = true;
+									break;
+								}
+							}
+							if (!dupChk) {
+								EmailFileListData filelist = new EmailFileListData();
+								filelist.setM_szName(file[1]);
+								filelist.setM_szContent(file[0]);
+								filelist.setM_szIsEcm("true");
+
+								Log.d("EmailWriteActivity", " - " + dupNum + " file list content : " + filelist.getM_szContent());
+								Log.d("EmailWriteActivity", " - " + dupNum + " file list name : " + filelist.getM_szName());
+								Log.d("EmailWriteActivity", " - " + dupNum + " file list id : " + filelist.getM_szId());
+								Log.d("EmailWriteActivity", " - " + dupNum + " file list contentId : " + filelist.getM_szContentId());
+								Log.d("EmailWriteActivity", " - " + dupNum + " file list isecm : " + filelist.getM_szIsEcm());
+
+								uploadList.add(filelist);
+							}
+						}
+						if (dupNum > 0) {
+							Toast.makeText(this, "첨부 파일과 동일한 파일이 " + dupNum + "개 있습니다.", Toast.LENGTH_SHORT).show();
+						}
+					}
 				}
-
-				Log.d("xxxxxxxxxxxxxxxxxxx", "xxxxxxxxx  imgUri.getPath()  "
-						+ file[0] + "  " + file[1]);
-				EmailFileListData filelist = new EmailFileListData();
-				filelist.setM_szName(file[1]);
-				filelist.setM_szContent(file[0]);
-				filelist.setM_szIsEcm("true");
-
-				uploadList.add(filelist);
 				setUploadUI();
+				Log.d("EmailWriteActivity", " - uploadList : " + uploadList.toString());
 			}
 
 		} else {
@@ -1500,6 +1573,15 @@ public class EmailWriteActivity extends SKTActivity implements OnClickListener,
 					} else {
 						if (chkDub(names))
 							toList = toList + names + ";";
+					}
+
+					// kbr 2022.04.11
+					if (realAddrMap.containsKey(empName)) {
+						if (!"1".equals(chkBoxDefaultValue2(sendMyselfBtn.getTag()))) {	// 내게쓰기 on
+							sendMyselfBtn.setTag("1");
+							sendMyselfBtn.setBackground(getResources().getDrawable(
+									R.drawable.mail_check_on));
+						}
 					}
 
 					et1.requestFocus();
@@ -1727,7 +1809,7 @@ public class EmailWriteActivity extends SKTActivity implements OnClickListener,
 	 * for(int i=0; i<d.length; i++) {
 	 * 
 	 * if(!realAddrMap.containsKey(d[i])) {
-	 * if(!d[i].matches("^[a-zA-Z0-9_+.-]+@([a-z0-9-]+\\.)+[a-z0-9]{2,4}$")) {
+	 * if(!d[i].matches("^[a-zA-Z0-9_+.-]+@([a-z0-9-]+\\.F)+[a-z0-9]{2,4}$")) {
 	 * SKTDialog dia = new SKTDialog(this, SKTDialog.DLG_TYPE_1);
 	 * dia.getDialog(text + "에 잘못된 문자가 있습니다.").show(); // if(type == 1) { //
 	 * toList = ""; // } else if(type == 2) { // ccList = ""; // } else { //
@@ -1811,6 +1893,16 @@ public class EmailWriteActivity extends SKTActivity implements OnClickListener,
 									+ curText.substring(nextPos + 1);
 							if (v.getId() == R.id.textTo) {
 								toList = newText;
+
+								// kbr 2022.04.11
+								if (selText.equals(empName)) {
+									if ("1".equals(chkBoxDefaultValue2(sendMyselfBtn.getTag()))) {	// 내게쓰기 off
+										sendMyselfBtn.setTag("");
+										sendMyselfBtn.setBackground(getResources().getDrawable(
+												R.drawable.mail_check_off));
+									}
+								}
+
 								et1.requestFocus();
 								onFocusChangeTextView(et1, toList);
 

@@ -2,6 +2,7 @@ package com.ex.group.approval.easy.activity;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -35,23 +36,41 @@ import com.ex.group.approval.easy.domain.VocCodeTree;
 import com.ex.group.approval.easy.primitive.DraftFormPrimitive;
 import com.ex.group.approval.easy.primitive.VacCodePrimitive;
 import com.ex.group.approval.easy.util.DateUtils;
+import com.ex.group.mail.activity.EmailWriteActivity;
+import com.ex.group.mail.util.HttpConnection;
 import com.skt.pe.common.activity.PECommonActivity;
 import com.skt.pe.common.data.SKTUtil;
 import com.skt.pe.common.exception.SKTException;
 import com.skt.pe.common.primitive.Primitive;
 import com.skt.pe.util.DateUtil;
 
+import org.json.JSONObject;
+import org.json.JSONTokener;
+import org.json.simple.parser.JSONParser;
+
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okio.BufferedSink;
 
 public abstract class ApprovalCommonActivity extends PECommonActivity {
 	private final String TAG = "ApprovalCommonActivity";
@@ -458,6 +477,8 @@ public abstract class ApprovalCommonActivity extends PECommonActivity {
 		String url = "";
 		Context context;
 
+		String fileName = null;
+
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
@@ -513,35 +534,100 @@ public abstract class ApprovalCommonActivity extends PECommonActivity {
 			this.context = context;
 		}
 
-		@Override
-		protected String doInBackground(String... arg0) {
+		public JsonAction(String primitive, String url, Context context, String fileName) {
+			this.primitive = primitive;
+			this.url = url;
+			this.context = context;
+			this.fileName = fileName;
+		}
 
+		private void multipartUpload() {
+			DataOutputStream dos = null;
 			try {
-				StringBuffer body = new StringBuffer();
-				body.append(url);
-				URL url = new URL(body.toString());//운영
+				File f = new File(fileName);
+				int fileSize = (int)f.length();
+				FileInputStream mFileInputStream = new FileInputStream(fileName);
 
-				Log.i(TAG, TAG + "URL : = " + body.toString());
+				conn.setRequestMethod("POST");
+				conn.setConnectTimeout(15000);
+				conn.setReadTimeout(15000);
+				conn.setDoInput(true);
+				conn.setDoOutput(true);
+				conn.setUseCaches(false);
+				conn.setRequestProperty("Cache-Control", "no-cache");
+				conn.setRequestProperty("Connection", "Keep-Alive");
+				conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=*****");
 
-				conn = (HttpURLConnection) url.openConnection();
+				int responseCode = conn.getResponseCode();	// 통신이 가능한 상태인지 응답코드를 받는다.
+
+				Log.d(TAG, TAG + " ACTION responsecode  " + responseCode + "----" + conn.getResponseMessage());
+				if (responseCode == HttpURLConnection.HTTP_OK) {    // 통신 가능한 상태일 경우
+					dos = new DataOutputStream(conn.getOutputStream());
+					dos.writeBytes("--*****\r\n");
+
+					// 일반 데이터 넣는 부분
+					JSONObject jsonRequest = new JSONObject();
+					for (String params : url.split("\\?")[1].split("&")) {
+						jsonRequest.put(params.split("=")[0], params.split("=")[1]);
+					}
+
+					dos.writeBytes("\"Content-Disposition: form-data; name=\"params\"" + "\r\n");
+					dos.writeBytes("\r\n");
+					dos.writeBytes(jsonObject.toString());
+					dos.writeBytes("\r\n");
+					dos.writeBytes("--*****\r\n");
+
+					// 파일 데이터 넣는 부분
+					String extFileName = URLEncoder.encode(fileName.substring(fileName.lastIndexOf("/") + 1), "utf-8");
+					dos.writeBytes("Content-Disposition: form-data; name=\"file\";filename=\"" + extFileName + "\"" + "\r\n");
+					dos.writeBytes("\r\n");
+					int bytesAvailable = mFileInputStream.available();
+					int maxBufferSize = 1024;
+					int bufferSize = Math.min(bytesAvailable, maxBufferSize);
+					byte[] buffer = new byte[bufferSize];
+					int bytesRead = 0;
+
+					while ((bytesRead = mFileInputStream.read(buffer, 0, buffer.length)) != -1) {    // 파일 데이터 body에 넣기
+						dos.write(buffer, 0, bytesRead);
+					}
+
+					dos.writeBytes("\r\n");
+					dos.writeBytes("--*****--\r\n");
+					mFileInputStream.close();
+					dos.flush();
+
+					BufferedReader response = new BufferedReader(new InputStreamReader(conn.getInputStream(),"UTF-8"));
+					String line = null;
+					String responseJson = "";
+
+					while ((line = response.readLine()) != null) {
+						responseJson += line;
+					}
+
+					jsonObject = responseJson;
+				}
+			} catch (Exception e) {
+			}
+		}
+
+		private void dataConnection() {
+			try {
 				conn.setRequestMethod("GET");
-
 				conn.setConnectTimeout(15000);
 				conn.setReadTimeout(15000);
 				conn.setRequestProperty("Cache-Control", "no-cache");
-				// conn.setDoOutput(true);
 				conn.setDoInput(true);
 
-				int responseCode = conn.getResponseCode();
+				int responseCode = conn.getResponseCode();	// 통신이 가능한 상태인지 응답코드를 받는다.
 				Log.d(TAG, TAG + " ACTION responsecode  " + responseCode + "----" + conn.getResponseMessage());
-				if (responseCode == HttpURLConnection.HTTP_OK) {
-					is = conn.getInputStream();
-					baos = new ByteArrayOutputStream();
+				if (responseCode == HttpURLConnection.HTTP_OK) {    // 통신 가능한 상태일 경우
+					is = conn.getInputStream();    // 보낼 준비
+					baos = new ByteArrayOutputStream();    // 바이트 배열로 쓴다.
 					byte[] byteBuffer = new byte[1024];
 					byte[] byteData = null;
 					int nLength = 0;
 
-					while ((nLength = is.read(byteBuffer, 0, byteBuffer.length)) != -1) {
+					while ((nLength = is.read(byteBuffer, 0, byteBuffer.length)) != -1) {    // 보낸다.
 						baos.write(byteBuffer, 0, nLength);
 					}
 					byteData = baos.toByteArray();
@@ -556,7 +642,7 @@ public abstract class ApprovalCommonActivity extends PECommonActivity {
 						}
 					}
 
-					Map<String, List<String>> headers = conn.getHeaderFields();
+					Map<String, List<String>> headers = conn.getHeaderFields();    // 헤더 정보
 					Iterator<String> it = headers.keySet().iterator();
 					while (it.hasNext()) {
 						String key = it.next();
@@ -567,6 +653,28 @@ public abstract class ApprovalCommonActivity extends PECommonActivity {
 						}
 					}
 					jsonObject = response;
+				}
+			} catch (Exception e) {
+			}
+		}
+
+		@Override
+		protected String doInBackground(String... arg0) {
+
+			try {
+//				StringBuffer body = new StringBuffer();
+//				body.append(url);
+				URL connUrl = new URL(url);//운영
+
+//				Log.i(TAG, TAG + "URL : = " + body.toString());
+//				Log.i(TAG, TAG + "URL : = " + url);
+
+				conn = (HttpURLConnection) connUrl.openConnection();
+
+				if (!fileName.isEmpty()) {
+					multipartUpload();
+				} else {
+					dataConnection();
 				}
 
 			} catch (IOException e) {

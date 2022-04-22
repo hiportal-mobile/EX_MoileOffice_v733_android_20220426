@@ -269,6 +269,7 @@
                     android:src="@drawable/mail_priority" />
             </LinearLayout>
         </LinearLayout>
+        <include layout="@xml/common_send_mail_btn"></include>
     </FrameLayout>
 
 </LinearLayout>

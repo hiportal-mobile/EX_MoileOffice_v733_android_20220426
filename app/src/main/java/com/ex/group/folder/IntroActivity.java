@@ -1,5 +1,8 @@
 package com.ex.group.folder;
 
+import static android.content.Context.MODE_PRIVATE;
+import static android.content.Context.WIFI_SERVICE;
+
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
